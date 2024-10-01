@@ -1,0 +1,1132 @@
+:root {
+    --primary-color: #185ee0;
+    --secondary-color: #e6eef9;
+    --offcanvas-height: calc(400px - 50px);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.9rem;
+}
+body {
+    overflow: hidden;
+}
+
+/*------ LOGIN STYLE --------*/
+.login-container {
+    margin: 0; /* Remove default margin */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+.login-header {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)),
+        url("/assets/images/login-header.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 40vh;
+}
+
+.login-header div {
+    font-size: 2rem;
+}
+
+.login-input {
+    height: 30vh;
+}
+
+.login-input .form-md {
+    width: 100%;
+    text-align: center;
+    margin: 2.5rem auto 2.5rem auto;
+    padding: 0 1.2rem;
+}
+.login-input .form-md .form-group {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 320px;
+    position: relative;
+}
+
+.login-input .form-group:nth-child(2) {
+    margin-bottom: 0.5rem;
+}
+.login-input input {
+    position: relative;
+    display: block;
+    width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.37);
+    border-radius: 4px;
+    background-color: transparent;
+    margin: 0px auto;
+    padding: 6px 4px 4px 14px;
+    height: 40px;
+    outline: none !important;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.85);
+    transition: all 0.2s ease-in-out;
+}
+
+.login-input .form-group label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    text-align: left;
+    display: inline-block;
+    padding: 0 4px;
+    height: 14px;
+    line-height: 14px;
+    font-size: 14px;
+    font-weight: 400;
+    background: #fff;
+    color: rgba(0, 0, 0, 0.5);
+    margin: 0px auto;
+    cursor: text;
+    transition: all 0.15s ease-in-out;
+}
+
+.login-input input:hover,
+.login-input input:focus {
+    border: 1px solid #000;
+}
+
+.login-input input:valid + label,
+.login-input input:focus + label {
+    top: -6px;
+    color: #000;
+    font-weight: bold;
+}
+
+.login-input .form-group i {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    font-size: 1.4rem;
+    transform: translateY(-50%);
+}
+
+#loginBtn {
+    width: 100%;
+    outline: 0;
+    border: 0;
+    background-color: #00832c;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.login-container .divider {
+    position: relative;
+}
+
+.footer-section {
+    font-size: 0.9rem;
+    margin-top: 3rem;
+    height: 30vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-section ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.footer-section .contact-area {
+    border-bottom: 1px solid #353c46;
+    padding: 30px 0;
+}
+
+.footer-section .contact-content p::after {
+    background: #353c46;
+    bottom: -30px;
+    content: "";
+    height: 1px;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%);
+    width: 80%;
+}
+
+.footer-section .contact-content h6 {
+    color: #8b9199;
+    font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+.footer-section .contact-content span {
+    color: #353c47;
+    margin: 0 10px;
+}
+
+.footer-section .contact-social {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.footer-section .contact-social > ul {
+    display: inline-flex;
+}
+
+.footer-section .contact-social ul li a {
+    border: 1px solid #8b9199;
+    color: #8b9199;
+    display: inline-block;
+    height: 40px;
+    margin: 0 10px;
+    padding-top: 7px;
+    transition: all 0.4s ease 0s;
+    width: 40px;
+}
+
+.footer-section .contact-social ul li a:hover {
+    border: 1px solid #fab702;
+    color: #fab702;
+}
+
+.footer-section .contact-content img {
+    max-width: 210px;
+}
+
+.footer-section section,
+.footer-section footer {
+    background: #1a1e25;
+    color: #868c96;
+    flex: 1;
+}
+
+.footer-section footer p {
+    padding: 10px 0;
+    text-align: center;
+}
+
+.footer-section footer img {
+    width: 44px;
+}
+
+#rememberMe {
+    width: 15px;
+}
+
+/*---- CASHIER DASHBOARD ------*/
+
+#dashboardContainer {
+    background-color: #212225;
+    height: 100vh;
+    z-index: 100;
+}
+
+#cardContainer {
+    display: flex;
+    overflow-x: auto;
+    padding: 1rem 0;
+    scrollbar-width: none;
+}
+
+#cardContainer .card-img-top {
+    width: 100%; /* Make image fill the card width */
+    height: 100px; /* Set a fixed height for the image */
+    object-fit: cover; /* Maintain aspect ratio and cover the space */
+}
+
+#cardContainer .card {
+    width: 150px; /* Fixed width for the card */
+    height: 150px; /* Fixed height for the card */
+    flex: 0 0 auto; /* Prevents the card from shrinking */
+    margin-right: 1rem; /* Space between cards */
+    box-sizing: border-box; /* Includes padding/border in width */
+    transform: translateY(-30px);
+    animation: fadeTop 1s ease-in-out forwards;
+}
+
+#cardContainer .card-body {
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Adds ellipsis (...) for overflowed text */
+    white-space: nowrap; /* Prevents text from wrapping */
+}
+
+#cardContainer .food-name {
+    font-size: 0.8rem; /* Adjust font size as needed */
+}
+
+#cardContainer .trending-popper {
+    position: absolute;
+    top: -20px;
+    right: -8px;
+    background-color: red;
+    color: #ffffff;
+    border-radius: 10px;
+    padding: 0.3rem;
+}
+
+.trending-popper {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    padding: 5px 10px;
+    margin: 10px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.trending-popper:hover {
+    background-color: rgba(255, 215, 0, 0.8); /* Highlight color on hover */
+}
+
+.trending-popper span {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 0.7rem;
+}
+
+.trending-popper i {
+    margin-right: 5px; /* Space between icon and text */
+    color: #ffd700; /* Color for the icons */
+}
+
+.dashboard-body {
+    position: relative;
+    height: 100vh;
+    z-index: 500;
+}
+
+.dashboard-body .container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 1.5rem;
+}
+
+.dashboard-body .tabs {
+    display: flex;
+    position: relative;
+    background-color: #fff;
+    box-shadow: 0 0 1px 0 rgba(24, 94, 224, 0.15),
+        0 6px 12px 0 rgba(24, 94, 224, 0.15);
+    padding: 0.75rem;
+    border-radius: 99px;
+}
+
+.dashboard-body .tabs * {
+    z-index: 2;
+}
+
+.dashboard-body .tab a {
+    text-decoration: none; /* Remove underline from links */
+    color: inherit; /* Inherit the color from the tab */
+    display: block; /* Make the anchor a block element */
+    width: 100%; /* Make anchor fill the tab */
+    text-align: center; /* Center the text */
+}
+
+.dashboard-body input[type="radio"] {
+    display: none;
+}
+
+.dashboard-body input[type="radio"]:checked + label {
+    color: var(--primary-color);
+}
+
+.dashboard-body input[type="radio"]:checked + label .notification {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.dashboard-body .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 100px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: color 0.15s ease-in;
+}
+
+.dashboard-body input[id="radio-1"]:checked ~ .glider {
+    transform: translateX(0);
+}
+
+.dashboard-body input[id="radio-2"]:checked ~ .glider {
+    transform: translateX(100%);
+}
+
+.dashboard-body input[id="radio-3"]:checked ~ .glider {
+    transform: translateX(200%);
+}
+
+.dashboard-body .glider {
+    position: absolute;
+    display: flex;
+    height: 40px;
+    width: 100px;
+    background-color: var(--secondary-color);
+    z-index: 1;
+    border-radius: 99px;
+    transition: 0.25s ease-out;
+}
+
+.dashboard-body .grid-container {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(140px, 1fr)
+    ); /* Adjust min width */
+    gap: 12px; /* Space between grid items */
+    margin-bottom: 7rem;
+}
+
+.dashboard-body .card {
+    background-color: #f8f9fa; /* Light background color */
+    border: none; /* Remove border */
+    border-radius: 8px; /* Rounded corners */
+}
+
+.dashboard-body .img-square {
+    width: 100%; /* Full width */
+    height: 150px; /* Fixed height */
+    object-fit: contain; /* Maintain aspect ratio */
+    background-color: white;
+}
+
+.dashboard-body .price {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: #ffffff;
+    border-radius: 50%;
+    padding: 0.3rem;
+}
+
+.dashboard-body .price span {
+    font-size: 0.8rem;
+}
+
+.dashboard-body .stock {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #212225;
+    color: #ffffff;
+    padding: 0.3rem;
+    border-radius: 5px;
+}
+
+.dashboard-body .stock span {
+    font-size: 0.8rem;
+}
+
+.make-order {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 1.25rem;
+    border-radius: 30px;
+    background-color: #212225;
+    z-index: 800;
+}
+
+.make-order a {
+    text-decoration: none;
+    color: #ffffff;
+    align-items: center;
+}
+
+#dashboardContainer .tab-content {
+    position: relative;
+    transition: transform 0.5s ease-in-out;
+}
+
+#dashboardContainer .food-menu,
+#dashboardContainer .inventory {
+    position: absolute;
+    width: 100%;
+    top: 60px;
+    left: 0;
+    transition: transform 0.5s ease;
+}
+
+#dashboardContainer .inventory {
+    transform: translateX(-100%);
+}
+
+/*---- CASHIER NAVBAR ------*/
+#cashierNav i {
+    font-size: 1.5rem;
+}
+
+/* Make the offcanvas hidden by default */
+#cashierNav .offcanvas {
+    background-color: #2c2f33;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    transform: translateX(100%); /* Move the menu off-screen */
+    transition: transform 0.3s ease;
+    z-index: 3000;
+}
+
+/* Show the offcanvas when hovering over the parent container */
+#cashierNav:hover .offcanvas {
+    transform: translateX(0); /* Slide in the menu */
+}
+
+/* Additional styling */
+#cashierNav .offcanvas i {
+    font-size: 2rem;
+}
+
+#cashierNav .offcanvas-header {
+    border-bottom: 1px solid #444;
+}
+
+#cashierNav .offcanvas-title {
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+}
+
+#cashierNav .nav-link {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+#cashierNav .btn-close-white {
+    filter: invert(100%);
+}
+
+#sidebarCashier .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.food-menu {
+    transition: transform 0.5s ease;
+    transform: translateX(0%); /* Start with food menu visible */
+}
+
+.inventory {
+    transition: transform 0.5s ease;
+    transform: translateX(100%); /* Start with inventory hidden */
+}
+
+/*------ CASHIER ORDER ---------*/
+
+#orderContainer {
+    margin: 0; /* Remove default margin */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#orderContainer .order-header {
+    background-color: #212225;
+    z-index: 100;
+}
+
+#orderContainer .order-calculate {
+    transform: translateY(-30px);
+    animation: fadeTop 1s ease-in-out forwards;
+}
+
+#orderContainer .order-body {
+    position: relative;
+    height: 100vh;
+}
+
+#orderContainer .order-body .container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 1.5rem;
+}
+
+.burger-counter {
+    margin-top: 1rem;
+}
+
+.burger-counter .burger-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Adjust grid columns */
+    gap: 1rem;
+}
+
+.burger-counter .burger-box {
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 0.8rem; /* Reduce padding */
+    text-align: center;
+    border-radius: 8px;
+    width: 100%; /* Set a smaller fixed width */
+    height: 150px; /* Set a smaller fixed height */
+}
+
+.burger-counter .box-content {
+    margin-bottom: 0.5rem;
+}
+
+.burger-counter .box-content img {
+    width: 100%;
+    height: 100px; /* Reduce image height */
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.burger-counter .box-title {
+    font-size: 0.7rem; /* Adjust font size */
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.return {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.return a i {
+    font-size: 1.8rem;
+    margin-top: 5px;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-bottom: 0.5rem;
+}
+.quantity__minus,
+.quantity__plus {
+    display: block;
+    width: 22px;
+    height: 19px;
+    margin: 0;
+    background: #dee0ee;
+    text-decoration: none;
+    text-align: center;
+    line-height: 19px;
+}
+.quantity__minus:hover,
+.quantity__plus:hover {
+    background: #575b71;
+    color: #fff;
+}
+.quantity__minus {
+    border-radius: 3px 0 0 3px;
+}
+.quantity__plus {
+    border-radius: 0 3px 3px 0;
+}
+.quantity__input {
+    width: 32px;
+    height: 19px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    border-top: 2px solid #dee0ee;
+    border-bottom: 2px solid #dee0ee;
+    border-left: 1px solid #dee0ee;
+    border-right: 2px solid #dee0ee;
+    background: #fff;
+    color: #8184a1;
+}
+.quantity__minus:link,
+.quantity__plus:link {
+    color: #8184a1;
+}
+.quantity__minus:visited,
+.quantity__plus:visited {
+    color: #fff;
+}
+
+.fries-counter {
+    margin-top: 1rem;
+}
+
+.fries-counter .fries-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Adjust grid columns */
+    gap: 1rem;
+}
+
+.fries-counter .fries-box {
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 0.8rem; /* Reduce padding */
+    text-align: center;
+    border-radius: 8px;
+    width: 100%; /* Set a smaller fixed width */
+    height: 150px; /* Set a smaller fixed height */
+}
+
+.fries-counter .box-content {
+    margin-bottom: 0.5rem;
+}
+
+.fries-counter .box-content img {
+    width: 100%;
+    height: 100px; /* Reduce image height */
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.fries-counter .box-title {
+    font-size: 0.7rem; /* Adjust font size */
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.sauce-counter {
+    margin-top: 1rem;
+}
+
+.sauce-counter .sauce-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Adjust grid columns */
+    gap: 1rem;
+}
+
+.sauce-counter .sauce-box {
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 0.8rem; /* Reduce padding */
+    text-align: center;
+    border-radius: 8px;
+    width: 100%; /* Set a smaller fixed width */
+    height: 100px; /* Set a smaller fixed height */
+}
+
+.sauce-counter .box-content img {
+    width: 100%;
+    height: 100%; /* Reduce image height */
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.sauce-counter .box-title {
+    font-size: 0.7rem; /* Adjust font size */
+    font-weight: 500;
+    text-transform: capitalize;
+}
+.drink-counter {
+    margin-top: 1rem;
+}
+
+.drink-counter .drink-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Adjust grid columns */
+    gap: 1rem;
+}
+
+.drink-counter .drink-box {
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 0.8rem; /* Reduce padding */
+    text-align: center;
+    border-radius: 8px;
+    width: 100%; /* Set a smaller fixed width */
+    height: 150px; /* Set a smaller fixed height */
+}
+
+.drink-counter .box-content {
+    margin-bottom: 0.5rem;
+}
+
+.drink-counter .box-content img {
+    width: 100%;
+    height: 100px; /* Reduce image height */
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.drink-counter .box-title {
+    font-size: 0.7rem; /* Adjust font size */
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+#offcanvasBottom .offcanvas-header i {
+    font-size: 1.25rem;
+}
+
+#order-buttons {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#order-buttons div {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-radius: 30px;
+    background-color: #ec3001;
+}
+
+#order-buttons div a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.order-body .price {
+    position: absolute;
+    top: -10px;
+    right: 0px;
+    background-color: red;
+    color: #ffffff;
+    border-radius: 50%;
+    padding: 0.3rem;
+}
+
+.order-body .price span {
+    font-size: 0.8rem;
+}
+
+.sauce-counter .sauce-grid {
+    display: flex; /* Change to flexbox for row layout */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    gap: 1rem;
+    padding-bottom: 1rem; /* Add padding for smooth scrolling */
+    scrollbar-width: none; /* Hide default scrollbar for Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari, Edge */
+.sauce-counter .sauce-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.sauce-counter .sauce-box {
+    flex: 0 0 30%; /* Control width of the boxes for sliding */
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 0.8rem;
+    text-align: center;
+    border-radius: 8px;
+    height: 100px;
+}
+
+.sauce-counter .box-content img {
+    width: 100%;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+#burgerSelectSauceOffcanvas {
+    position: absolute;
+    bottom: 0;
+    left: 16%;
+    transform: translateY(-50%);
+}
+
+.order-counter,
+.offcanvas-body-top-overflow,
+.food-menu,
+.inventory,
+#orderHistory,
+.dashboard-body-manager {
+    height: var(--offcanvas-height);
+    overflow-y: scroll;
+    scrollbar-width: none;
+    padding-bottom: 4rem;
+}
+
+/*---------- ORDER HISTORY -----------*/
+#orderHistory {
+    height: 100vh;
+}
+#orderHistory .header-title {
+    text-transform: uppercase;
+    position: relative;
+    top: -45px;
+    left: 35%;
+}
+
+#orderHistory .search-bar {
+    width: 100%;
+    max-width: 31.25rem;
+    margin: 6rem auto;
+}
+
+#orderHistory .searchBar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#orderHistory #searchQueryInput {
+    width: 100%;
+    height: 2.8rem;
+    background: #f5f5f5;
+    outline: none;
+    border: none;
+    border-radius: 1.625rem;
+    padding: 0 3.5rem 0 1.5rem;
+    font-size: 1rem;
+}
+
+#orderHistory #searchQuerySubmit {
+    width: 3.5rem;
+    height: 2.8rem;
+    margin-left: -3.5rem;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+#orderHistory #searchQuerySubmit:hover {
+    cursor: pointer;
+}
+
+.filter-categories {
+    margin-top: 1.25rem;
+    padding-inline: 1rem;
+}
+
+.filter-categories .row {
+    scrollbar-width: none;
+    gap: 5px;
+}
+
+.filter {
+    font-size: 0.7rem;
+    border: 1px solid #cacaca;
+    border-radius: 30px;
+    color: #000000;
+    text-align: center;
+    flex-basis: 22%;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    padding: 8px 5px;
+    text-decoration: none !important;
+}
+
+.filter.active {
+    background-color: #212225;
+    color: #ffffff;
+}
+
+.order-summary .col-lg-12 {
+    height: 80px;
+}
+
+.order-summary .col-lg-12 .col-2 i {
+    font-size: 3rem;
+}
+
+.order-summary .col-lg-12 .col-10 p {
+    margin: 0;
+    font-size: 0.7rem;
+}
+
+.summary-container {
+    position: relative;
+}
+
+.order-summary .check-order span {
+    font-size: 0.6rem;
+    padding: 5px 8px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+.accordion-button.collapsed .fa-chevron-down {
+    transform: rotate(180deg); /* Adjust according to your icon class */
+}
+
+.announcement-container {
+    height: 100vh;
+    flex-direction: column;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+}
+
+.announcement-container iframe {
+    border-radius: 50%;
+}
+
+/* -------------- CASHIER PROFILE ------------- */
+#profileContainer {
+    background-color: #212225;
+    height: 20vh;
+    z-index: 200;
+}
+
+.footer-profile {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.footer-profile span {
+    font-size: 0.8rem;
+}
+
+/*---- MANAGER NAV -------*/
+#managerNav i {
+    font-size: 1.5rem;
+}
+
+/* Make the offcanvas hidden by default */
+#managerNav .offcanvas {
+    background-color: #2c2f33;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    transform: translateX(100%); /* Move the menu off-screen */
+    transition: transform 0.3s ease;
+    z-index: 3000;
+}
+
+/* Show the offcanvas when hovering over the parent container */
+#managerNav:hover .offcanvas {
+    transform: translateX(0); /* Slide in the menu */
+}
+
+/* Additional styling */
+#managerNav .offcanvas i {
+    font-size: 2rem;
+}
+
+#managerNav .offcanvas-header {
+    border-bottom: 1px solid #444;
+}
+
+#managerNav .offcanvas-title {
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+}
+
+#managerNav .nav-link {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+#managerNav .btn-close-white {
+    filter: invert(100%);
+}
+
+#sidebarManager .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+/*---- MANAGER DASHBOARD -------*/
+.cashier-grid,
+.branch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns per row */
+    gap: 20px; /* Spacing between the cards */
+}
+
+.cashier-card,
+.branch-card {
+    background: #f7f7f7; /* Light background color for the card */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease;
+}
+
+.cashier-card:hover,
+.branch-grid:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Add hover effect */
+}
+
+.branch-grid .profile-picture img,
+.cashier-grid .profile-picture img {
+    border: 3px solid #e1e1e1; /* Add a border around the image */
+    padding: 3px;
+}
+
+.cashier-info h5,
+.branch-info h5 {
+    font-size: 1.1rem; /* Slightly smaller heading */
+}
+
+.cashier-info span,
+.branch-info span {
+    font-size: 0.9rem; /* Adjust text size */
+}
+
+/* Styles for Larger Screens (Height >= 700px) */
+@media only screen and (min-height: 700px) {
+    :root {
+        --offcanvas-height: calc(450px - 50px);
+    }
+}
+
+/* Styles for Tablets or Mid-Sized Devices (Height >= 800px) */
+@media only screen and (min-height: 800px) {
+    :root {
+        --offcanvas-height: calc(510px - 50px);
+    }
+}
+
+/* Styles for Larger Devices (Height >= 900px) */
+@media only screen and (min-height: 900px) {
+    :root {
+        --offcanvas-height: calc(550px - 50px);
+    }
+}
+
+/* Styles for Larger Devices (Height >= 900px) */
+@media only screen and (min-width: 500px) {
+    .login-container {
+        display: none;
+    }
+    .cashier-container {
+        display: none;
+    }
+}
+
+@keyframes fadeTop {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
