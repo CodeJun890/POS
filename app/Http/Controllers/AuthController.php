@@ -54,7 +54,7 @@ class AuthController extends Controller
                                 $authenticatedMessage = 'Welcome to City Burgers POS System';
                                 break;
                             default:
-                                $redirectRoute = 'home.get'; // Fallback route or home route
+                                $redirectRoute = 'login.get'; // Fallback route or home route
                                 $authenticatedMessage = 'Welcome! You have been logged in successfully.';
                         }
 

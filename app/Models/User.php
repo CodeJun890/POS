@@ -26,9 +26,5 @@ class User extends Authenticatable
         'contact_number',
     ];
 
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
-    }
 
 }

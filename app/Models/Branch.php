@@ -12,8 +12,4 @@ class Branch extends Model
       // Define fillable fields
       protected $fillable = ['name', 'address'];
 
-      public function users()
-    {
-        return $this->hasMany(User::class);
-    }
 }
