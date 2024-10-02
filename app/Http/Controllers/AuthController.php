@@ -28,6 +28,7 @@ class AuthController extends Controller
     }
 
     public function postLogin(Request $request) {
+
             // Validate email and password fields
             $request->validate([
                 'email' => 'required|email',

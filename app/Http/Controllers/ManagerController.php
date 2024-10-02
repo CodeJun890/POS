@@ -15,12 +15,12 @@ use Illuminate\Support\Facades\Log;
 
 class ManagerController extends Controller
 {
-    public function viewManagerDashboard(){
+    public function viewManagerDashboard() {
         $user = Auth::user();
         if ($user) {
             $drinks = ['Mountain Dew', 'Royal', 'Coke', 'Water', 'Sprite'];
 
-            // Fetch the top 3 trending food items with price
+            // Fetch the top 2 trending food items with price
             $trendingFood = DB::table('orders')
                 ->select('item', 'sauce', 'image', 'price', DB::raw('count(*) as total'))
                 ->whereNotIn('item', $drinks)
@@ -45,7 +45,7 @@ class ManagerController extends Controller
             $totalSales = Order::whereYear('created_at', $currentYear)
                 ->sum(DB::raw('quantity * price'));
 
-            // Calculate total profit for the current year using the existing profit value in orders
+            // Calculate total profit for the current year
             $totalProfit = Order::whereYear('created_at', $currentYear)
                 ->sum(DB::raw('quantity * profit'));
 
@@ -69,42 +69,50 @@ class ManagerController extends Controller
                 ->with('orders')
                 ->get();
 
-                $weeklySales = [];
-                $weeklyProfit = [];
+            $weeklySales = [];
+            $weeklyProfit = [];
 
-                // Initialize sales and profit for each day of the week
-                $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                foreach ($daysOfWeek as $day) {
-                    $weeklySales[$day] = 0;
-                    $weeklyProfit[$day] = 0;
+            // Initialize sales and profit for each day of the week
+            $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            foreach ($daysOfWeek as $day) {
+                $weeklySales[$day] = 0;
+                $weeklyProfit[$day] = 0;
+            }
+
+            foreach ($weeklySalesData as $group) {
+                $dayName = $group->created_at->format('l');
+                if (in_array($dayName, $daysOfWeek)) {
+                    $dailySales = $group->orders->sum(fn($order) => $order->price * $order->quantity);
+                    $dailyProfit = $group->orders->sum(fn($order) => $order->profit * $order->quantity);
+
+                    // Add to the corresponding day
+                    $weeklySales[$dayName] += $dailySales;
+                    $weeklyProfit[$dayName] += $dailyProfit;
                 }
+            }
 
-                foreach ($weeklySalesData as $group) {
-                    $dayName = $group->created_at->format('l'); // Ensure this is valid
-                    if (in_array($dayName, $daysOfWeek)) { // Check if it's a valid day
-                        $dailySales = $group->orders->sum(fn($order) => $order->price * $order->quantity);
-                        $dailyProfit = $group->orders->sum(fn($order) => $order->profit * $order->quantity);
+            // Prepare data for the weekly sales graph
+            $weeklyChartData = [
+                'labels' => $daysOfWeek,
+                'sales' => array_values($weeklySales),
+                'profit' => array_values($weeklyProfit),
+            ];
 
-                        // Add to the corresponding day
-                        $weeklySales[$dayName] += $dailySales;
-                        $weeklyProfit[$dayName] += $dailyProfit;
-                    }
-                }
+            // Check if trending food or drink are empty and set default values
+            if ($trendingFood->isEmpty()) {
+                $trendingFood = collect([['item' => 'No trending food', 'sauce' => '', 'image' => '', 'price' => 0]]);
+            }
 
-                // Prepare data for the weekly sales graph
-                $weeklyChartData = [
-                    'labels' => $daysOfWeek, // Monday to Sunday
-                    'sales' => array_values($weeklySales),
-                    'profit' => array_values($weeklyProfit),
-                ];
-
-
+            if ($trendingDrink->isEmpty()) {
+                $trendingDrink = collect([['item' => 'No trending drink', 'image' => '', 'price' => 0]]);
+            }
 
             return view('Manager.manager_dashboard', compact('user', 'totalSales', 'totalProfit', 'trendingFood', 'trendingDrink', 'chartData', 'weeklyChartData'));
         }
 
         return redirect()->route('login.get');
     }
+
     public function getWeeklyData(Request $request){
         $date = $request->input('date');
         $startOfWeek = Carbon::parse($date)->startOfWeek();
