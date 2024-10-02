@@ -35,49 +35,30 @@
                     style=" color: #ffd700; "></i>Top Selling Food
             </div>
             <div class="dashboard-inner-body">
-                @if ($trendingFood)
-                    <div class="order-item d-flex align-items-center border-bottom py-2 position-relative">
-                        <div class="order-details d-flex align-items-center">
-                            <img src="{{ asset($trendingFood[0]->image) }}" alt="{{ $trendingFood[0]->item }}"
-                                class="img-fluid rounded" style="width: 50px; height: 50px;">
-                            <div class="ms-3 text-dark" style="position: relative;">
-                                <div class="fw-bold">{{ $trendingFood[0]->item }}</div>
-                                <div class="text-dark">Sauce: {{ $trendingFood[0]->sauce }}</div>
-                                <div class="text-dark">Price: &#8369;
-                                    {{ $trendingFood[0]->price }}
+                @foreach ($trendingFood as $index => $food)
+                    @if (is_object($food))
+                        <div class="order-item d-flex align-items-center border-bottom py-2 position-relative">
+                            <div class="order-details d-flex align-items-center">
+                                <img src="{{ asset($food->image) }}" alt="{{ $food->item }}" class="img-fluid rounded"
+                                    style="width: 50px; height: 50px;">
+                                <div class="ms-3 text-dark" style="position: relative;">
+                                    <div class="fw-bold">{{ $food->item }}</div>
+                                    <div class="text-dark">Sauce: {{ $food->sauce }}</div>
+                                    <div class="text-dark">Price: &#8369;{{ $food->price }}</div>
                                 </div>
                             </div>
+                            <div class="fw-bold bg-danger text-light rounded-5 px-2 py-1"
+                                style="position: absolute; top:5px; right:0;">
+                                <span><i class="fa-solid fa-trophy"
+                                        style="color: {{ $index === 0 ? '#ffd700' : 'rgb(219, 219, 219)' }};"></i> Top
+                                    {{ $index + 1 }}</span>
+                            </div>
+                        </div>
+                    @else
+                        <p>Item is not valid.</p>
+                    @endif
+                @endforeach
 
-                        </div>
-                        <div class="fw-bold bg-danger text-light rounded-5 px-2 py-1"
-                            style="position: absolute; top:5px; right:0;">
-                            <span><i class="fa-solid fa-trophy" style="color: #ffd700;"></i>
-                                Top
-                                1</span>
-                        </div>
-                    </div>
-                    <div class="order-item d-flex align-items-center border-bottom py-2 position-relative">
-                        <div class="order-details d-flex align-items-center">
-                            <img src="{{ asset($trendingFood[1]->image) }}" alt="{{ $trendingFood[1]->item }}"
-                                class="img-fluid rounded" style="width: 50px; height: 50px;">
-                            <div class="ms-3 text-dark" style="position: relative;">
-                                <div class="fw-bold">{{ $trendingFood[1]->item }}</div>
-                                <div class="text-dark">Sauce: {{ $trendingFood[1]->sauce }}</div>
-                                <div class="text-dark">Price: &#8369;
-                                    {{ $trendingFood[1]->price }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fw-bold bg-danger text-light rounded-5 px-2 py-1"
-                            style="position: absolute; top:5px; right:0;">
-                            <span><i class="fa-solid fa-trophy" style="color: rgb(219, 219, 219);"></i>
-                                Top
-                                2</span>
-                        </div>
-                    </div>
-                @else
-                    <p>No trending food items.</p>
-                @endif
             </div>
             <div class="sauce-graph mt-3">
                 <div class="fs-6 text-uppercase fw-bold text-light"><i class="fa-solid fa-chart-pie me-2"

@@ -28,45 +28,39 @@ class AuthController extends Controller
     }
 
     public function postLogin(Request $request) {
+        // Validate email and password fields
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-            // Validate email and password fields
-            $request->validate([
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
+        // Check if the credentials are correct
+        $credentials = $request->only('email', 'password');
+        $remember = $request->has('remember');
 
-            // Check if the email exists in the database
-            $user = User::where('email', $request->input('email'))->first();
-
-            if ($user) {
-                // Check if the user has provided the correct password
-                $credentials = $request->only('email', 'password');
-                $remember = $request->has('remember');
-
-                if (Auth::attempt($credentials, $remember)) {
-                    $user = Auth::user();
-                        switch ($user->role) {
-                            case 'manager':
-                                $redirectRoute = 'manager-dashboard.get';
-                                $authenticatedMessage = 'Welcome to City Burgers POS System';
-                                break;
-                            case 'cashier':
-                                $redirectRoute = 'cashier-dashboard.get';
-                                $authenticatedMessage = 'Welcome to City Burgers POS System';
-                                break;
-                            default:
-                                $redirectRoute = 'login.get'; // Fallback route or home route
-                                $authenticatedMessage = 'Welcome! You have been logged in successfully.';
-                        }
-
-                        return redirect()->intended(route($redirectRoute))
-                                        ->with('authenticated', $authenticatedMessage);
-
-            } else {
-                return redirect()->back()->with('error', 'Wrong email or password. Please try again.');
+        if (Auth::attempt($credentials, $remember)) {
+            $user = Auth::user();
+            switch ($user->role) {
+                case 'manager':
+                    $redirectRoute = 'manager-dashboard.get';
+                    $authenticatedMessage = 'Welcome to City Burgers POS System';
+                    break;
+                case 'cashier':
+                    $redirectRoute = 'cashier-dashboard.get';
+                    $authenticatedMessage = 'Welcome to City Burgers POS System';
+                    break;
+                default:
+                    $redirectRoute = 'login.get'; // Fallback route or home route
+                    $authenticatedMessage = 'Welcome! You have been logged in successfully.';
             }
+
+            return redirect()->intended(route($redirectRoute))
+                             ->with('authenticated', $authenticatedMessage);
+        } else {
+            return redirect()->back()->with('error', 'Wrong email or password. Please try again.');
         }
     }
+
     public function logout(){
         // Clear the session data
         \Illuminate\Support\Facades\Session::flush();

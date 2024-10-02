@@ -33,51 +33,30 @@
                     style=" color: #ffd700; "></i>Top Selling Food
             </div>
             <div class="dashboard-inner-body">
-                <?php if($trendingFood): ?>
-                    <div class="order-item d-flex align-items-center border-bottom py-2 position-relative">
-                        <div class="order-details d-flex align-items-center">
-                            <img src="<?php echo e(asset($trendingFood[0]->image)); ?>" alt="<?php echo e($trendingFood[0]->item); ?>"
-                                class="img-fluid rounded" style="width: 50px; height: 50px;">
-                            <div class="ms-3 text-dark" style="position: relative;">
-                                <div class="fw-bold"><?php echo e($trendingFood[0]->item); ?></div>
-                                <div class="text-dark">Sauce: <?php echo e($trendingFood[0]->sauce); ?></div>
-                                <div class="text-dark">Price: &#8369;
-                                    <?php echo e($trendingFood[0]->price); ?>
-
+                <?php $__currentLoopData = $trendingFood; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $food): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php if(is_object($food)): ?>
+                        <div class="order-item d-flex align-items-center border-bottom py-2 position-relative">
+                            <div class="order-details d-flex align-items-center">
+                                <img src="<?php echo e(asset($food->image)); ?>" alt="<?php echo e($food->item); ?>" class="img-fluid rounded"
+                                    style="width: 50px; height: 50px;">
+                                <div class="ms-3 text-dark" style="position: relative;">
+                                    <div class="fw-bold"><?php echo e($food->item); ?></div>
+                                    <div class="text-dark">Sauce: <?php echo e($food->sauce); ?></div>
+                                    <div class="text-dark">Price: &#8369;<?php echo e($food->price); ?></div>
                                 </div>
                             </div>
-
-                        </div>
-                        <div class="fw-bold bg-danger text-light rounded-5 px-2 py-1"
-                            style="position: absolute; top:5px; right:0;">
-                            <span><i class="fa-solid fa-trophy" style="color: #ffd700;"></i>
-                                Top
-                                1</span>
-                        </div>
-                    </div>
-                    <div class="order-item d-flex align-items-center border-bottom py-2 position-relative">
-                        <div class="order-details d-flex align-items-center">
-                            <img src="<?php echo e(asset($trendingFood[1]->image)); ?>" alt="<?php echo e($trendingFood[1]->item); ?>"
-                                class="img-fluid rounded" style="width: 50px; height: 50px;">
-                            <div class="ms-3 text-dark" style="position: relative;">
-                                <div class="fw-bold"><?php echo e($trendingFood[1]->item); ?></div>
-                                <div class="text-dark">Sauce: <?php echo e($trendingFood[1]->sauce); ?></div>
-                                <div class="text-dark">Price: &#8369;
-                                    <?php echo e($trendingFood[1]->price); ?>
-
-                                </div>
+                            <div class="fw-bold bg-danger text-light rounded-5 px-2 py-1"
+                                style="position: absolute; top:5px; right:0;">
+                                <span><i class="fa-solid fa-trophy"
+                                        style="color: <?php echo e($index === 0 ? '#ffd700' : 'rgb(219, 219, 219)'); ?>;"></i> Top
+                                    <?php echo e($index + 1); ?></span>
                             </div>
                         </div>
-                        <div class="fw-bold bg-danger text-light rounded-5 px-2 py-1"
-                            style="position: absolute; top:5px; right:0;">
-                            <span><i class="fa-solid fa-trophy" style="color: rgb(219, 219, 219);"></i>
-                                Top
-                                2</span>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <p>No trending food items.</p>
-                <?php endif; ?>
+                    <?php else: ?>
+                        <p>Item is not valid.</p>
+                    <?php endif; ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
             </div>
             <div class="sauce-graph mt-3">
                 <div class="fs-6 text-uppercase fw-bold text-light"><i class="fa-solid fa-chart-pie me-2"

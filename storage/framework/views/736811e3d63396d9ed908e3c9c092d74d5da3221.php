@@ -46,12 +46,7 @@
                     Cashier Management
                 </a>
             </li>
-            <li class="nav-item mb-3">
-                <i class="ph ph-buildings"></i>
-                <a class="nav-link text-white" href="<?php echo e(route('branch-management.get')); ?>">
-                    Branch Management
-                </a>
-            </li>
+            
 
             <li class="nav-item">
                 <i class="ph-sign-out"></i>

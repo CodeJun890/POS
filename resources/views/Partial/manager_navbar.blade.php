@@ -46,12 +46,12 @@
                     Cashier Management
                 </a>
             </li>
-            <li class="nav-item mb-3">
+            {{-- <li class="nav-item mb-3">
                 <i class="ph ph-buildings"></i>
                 <a class="nav-link text-white" href="{{ route('branch-management.get') }}">
                     Branch Management
                 </a>
-            </li>
+            </li> --}}
 
             <li class="nav-item">
                 <i class="ph-sign-out"></i>
