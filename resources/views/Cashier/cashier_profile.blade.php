@@ -61,7 +61,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <footer class="text-center footer-profile">
             <span>

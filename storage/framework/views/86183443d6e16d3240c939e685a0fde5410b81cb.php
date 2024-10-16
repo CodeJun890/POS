@@ -1,49 +1,48 @@
-@extends('Layout.cashier_layout')
+<?php $__env->startSection('page-title', 'City Burgers POS | Dashboard'); ?>
 
-@section('page-title', 'City Burgers POS | Dashboard')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="container-fluid p-0" id="dashboardContainer">
         <div class="dashboard-header p-3">
             <div class="bg-success w-100 rounded-2">
                 <div class="cashier-branch text-center text-light fw-bold py-2">Branch: <span
-                        class="fst-italic">{{ $branch->name }}</span></div>
+                        class="fst-italic"><?php echo e($branch->name); ?></span></div>
             </div>
-            @include('Partial.cashier_navbar')
+            <?php echo $__env->make('Partial.cashier_navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             <div class="lead fw-bold text-white">Dashboard</div>
             <div class="d-flex overflow-auto py-3 px-0" id="cardContainer">
-                @if ($trendingFood->isNotEmpty() || $trendingDrink)
-                    @if ($trendingFood->isNotEmpty())
-                        @foreach ($trendingFood as $index => $food)
+                <?php if($trendingFood->isNotEmpty() || $trendingDrink): ?>
+                    <?php if($trendingFood->isNotEmpty()): ?>
+                        <?php $__currentLoopData = $trendingFood; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $food): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="card me-2">
-                                <img src="{{ asset($food->image) }}" class="card-img-top" alt="{{ $food->item }}">
+                                <img src="<?php echo e(asset($food->image)); ?>" class="card-img-top" alt="<?php echo e($food->item); ?>">
                                 <div class="card-body text-center">
-                                    <div class="food-name fw-bold">{{ $food->item }}</div>
-                                    <p class="m-0 text-secondary" style="font-size: 0.6rem">Sauce: {{ $food->sauce }}</p>
+                                    <div class="food-name fw-bold"><?php echo e($food->item); ?></div>
+                                    <p class="m-0 text-secondary" style="font-size: 0.6rem">Sauce: <?php echo e($food->sauce); ?></p>
                                 </div>
-                                <div class="trending-popper {{ $index === 0 ? 'popular' : 'buzzing' }} fw-bold">
+                                <div class="trending-popper <?php echo e($index === 0 ? 'popular' : 'buzzing'); ?> fw-bold">
                                     <span>
-                                        <i class="fa-solid fa-{{ $index === 0 ? 'trophy' : 'fire' }}"></i>
-                                        {{ $index === 0 ? 'Top Choice' : '2nd Choice' }}
+                                        <i class="fa-solid fa-<?php echo e($index === 0 ? 'trophy' : 'fire'); ?>"></i>
+                                        <?php echo e($index === 0 ? 'Top Choice' : '2nd Choice'); ?>
+
                                     </span>
                                 </div>
                             </div>
-                        @endforeach
-                    @endif
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php endif; ?>
 
-                    @if ($trendingDrink)
+                    <?php if($trendingDrink): ?>
                         <div class="card me-2">
-                            <img src="{{ asset($trendingDrink->image) }}" class="card-img-top"
-                                alt="{{ $trendingDrink->item }}">
+                            <img src="<?php echo e(asset($trendingDrink->image)); ?>" class="card-img-top"
+                                alt="<?php echo e($trendingDrink->item); ?>">
                             <div class="card-body text-center">
-                                <div class="food-name fw-bold">{{ $trendingDrink->item }}</div>
+                                <div class="food-name fw-bold"><?php echo e($trendingDrink->item); ?></div>
                             </div>
                             <div class="trending-popper best-selling fw-bold">
                                 <span><i class="fa-solid fa-thumbs-up"></i> Favorite Drink</span>
                             </div>
                         </div>
-                    @endif
-                @endif
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -67,7 +66,7 @@
                     <div class="grid-container">
                         <div class="card">
                             <div class="image-card-container rounded-4 shadow-md">
-                                <img src="{{ asset('assets/images/burger-1.jpg') }}" class="card-img-top img-square"
+                                <img src="<?php echo e(asset('assets/images/burger-1.jpg')); ?>" class="card-img-top img-square"
                                     alt="...">
                             </div>
                             <div class="card-body p-0 pt-1">
@@ -82,7 +81,7 @@
 
                         <div class="card">
                             <div class="image-card-container rounded-4 shadow-md">
-                                <img src="{{ asset('assets/images/burger-2.jpg') }}" class="card-img-top img-square"
+                                <img src="<?php echo e(asset('assets/images/burger-2.jpg')); ?>" class="card-img-top img-square"
                                     alt="...">
                             </div>
                             <div class="card-body p-0 pt-1">
@@ -97,7 +96,7 @@
 
                         <div class="card">
                             <div class="image-card-container rounded-4 shadow-md">
-                                <img src="{{ asset('assets/images/burger-3.jpg') }}" class="card-img-top img-square"
+                                <img src="<?php echo e(asset('assets/images/burger-3.jpg')); ?>" class="card-img-top img-square"
                                     alt="...">
                             </div>
                             <div class="card-body p-0 pt-1">
@@ -112,7 +111,7 @@
 
                         <div class="card">
                             <div class="image-card-container rounded-4 shadow-md">
-                                <img src="{{ asset('assets/images/burger-4.jpg') }}" class="card-img-top img-square"
+                                <img src="<?php echo e(asset('assets/images/burger-4.jpg')); ?>" class="card-img-top img-square"
                                     alt="...">
                             </div>
                             <div class="card-body p-0 pt-1">
@@ -131,33 +130,12 @@
                 <div class="inventory mt-4 w-100 px-3">
                     <div class="fs-6 fw-bold mb-1">Inventory</div>
 
-                    {{-- <div class="grid-container">
-                        @if ($inventories->isNotEmpty())
-                            @foreach ($inventories as $inventory)
-                                <div class="card">
-                                    <div class="image-card-container rounded-4 shadow-md">
-                                        <img src="{{ $inventory->item_image ? '/storage/' . $inventory->item_image : asset('assets/images/inventory-4.jpg') }}"
-                                            class="card-img-top img-square" alt="...">
-                                    </div>
-                                    <div class="card-body p-0 pt-1">
-                                        <div class="food-name fw-bold">{{ $inventory->item_name }}</div>
-                                        <div class="stock fw-bold">
-                                            <span>Total: {{ $inventory->item_quantity }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="text-center">
-                                <p class="m-0">No inventory items.</p>
-                            </div>
-                        @endif
-                    </div> --}}
+                    
                 </div>
 
                 <div class="make-order">
                     <i class="ph ph-plus me-1 text-white"></i>
-                    <a href="{{ route('cashier-order.get') }}">Create Order</a>
+                    <a href="<?php echo e(route('cashier-order.get')); ?>">Create Order</a>
                 </div>
             </div>
         </div>
@@ -190,4 +168,6 @@
         });
     </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('Layout.cashier_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\city_burgers_pos_system\resources\views/Cashier/cashier_dashboard.blade.php ENDPATH**/ ?>

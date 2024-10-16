@@ -55,7 +55,7 @@
                             </div>
                         </div>
                     @else
-                        <p>Item is not valid.</p>
+                        <p class="text-center my-4">No data yet.</p>
                     @endif
                 @endforeach
 

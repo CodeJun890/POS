@@ -9,7 +9,12 @@ class Branch extends Model
 {
     use HasFactory;
 
-      // Define fillable fields
-      protected $fillable = ['name', 'address'];
+    // Define fillable fields
+    protected $fillable = ['name', 'address', 'image'];
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 
 }

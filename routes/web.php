@@ -44,7 +44,7 @@ Route::get('/cashier-profile', [CashierController::class, 'viewCashierProfile'])
 // =============> MANAGER ROUTES <=================
 Route::get('/manager-dashboard', [ManagerController::class, 'viewManagerDashboard'])->name('manager-dashboard.get');
 Route::get('/get-weekly-data', [ManagerController::class, 'getWeeklyData']);
-// MANAGER ORDER HISTORY
+// MANAGER ORDER HISTORY PER BRANCH
 Route::get('/manager-order-history', [ManagerController::class, 'viewManagerOrderHistory'])->name('manager-order-history.get');
 Route::get('/manager-order-history/filter', [ManagerController::class, 'filterManagerOrderHistory'])->name('manager-order-history-filter.get');
 Route::get('/manager-receipt/view', [ManagerController::class, 'viewReceipt'])->name('manager-receipt.get');
@@ -52,10 +52,21 @@ Route::get('/manager-receipt/view', [ManagerController::class, 'viewReceipt'])->
 Route::get('/cashier-management', [ManagerController::class, 'viewCashierManagement'])->name('cashier-management.get');
 Route::delete('/manager/cashier/delete/{id}', [ManagerController::class, 'deleteCashier'])->name('cashier.delete');
 Route::post('/manager/cashier/create', [ManagerController::class, 'createCashier'])->name('cashier.create');
-// MANAGER'S CASHIER MANAGEMENT
+Route::get('/manager/cashier/profile/{id}', [ManagerController::class, 'viewCashierProfile'])->name('cashier.profile.view');
+// MANAGER'S BRANCH MANAGEMENT
 Route::get('/branch-management', [ManagerController::class, 'viewBranchManagement'])->name('branch-management.get');
 Route::delete('/manager/branch/delete/{id}', [ManagerController::class, 'deleteBranch'])->name('branch.delete');
 Route::post('/manager/branch/store', [ManagerController::class, 'createBranch'])->name('branch-management.post');
+Route::post('/manager/branch/assign/{id}', [ManagerController::class, 'assignBranch'])->name('branch-management.assign');
+Route::get('/manager/branch/view/{id}', [ManagerController::class, 'viewBranch'])->name('branch-management.view');
+Route::delete('/manager/cashier/assign/remove/{id}', [ManagerController::class, 'removeAssignedCashier'])->name('branch-management.reassign');
+// MANAGER'S INVENTORY MANAGEMENT
+Route::get('/inventory-management', [ManagerController::class, 'viewInventoryManagement'])->name('inventory-management.get');
+Route::post('/inventory-management/create', [ManagerController::class, 'createInventory'])->name('inventory-management.post');
+Route::put('/inventory-management/update/{id}', [ManagerController::class, 'updateInventory'])->name('inventory-management.put');
+Route::delete('/inventory-management/delete/{id}', [ManagerController::class, 'deleteInventory'])->name('inventory-management.delete');
+Route::get('/inventory-management/show/{id}', [ManagerController::class, 'show']); // To fetch the current inventory item
+
 
 
 

@@ -1,11 +1,9 @@
-@extends('Layout.manager_layout')
+<?php $__env->startSection('page-title', 'City Burgers POS | Order History'); ?>
 
-@section('page-title', 'City Burgers POS | Order History')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="container-fluid bg-white" id="orderHistory" style="overflow-x: hidden;">
         <div class="return p-3 text-dark">
-            <a href="{{ route('branch-management.view', encrypt($branch->id)) }}" class="text-dark">
+            <a href="<?php echo e(route('branch-management.view', encrypt($branch->id))); ?>" class="text-dark">
                 <i class="ph ph-arrow-left me-1"></i>
             </a>
         </div>
@@ -25,32 +23,32 @@
 
             <div class="filter-categories">
                 <div class="row flex-nowrap overflow-auto">
-                    <a href="{{ route('manager-order-history-filter.get', ['filter' => 'all', 'branch_id' => encrypt($branch->id)]) }}"
-                        class="filter filter--all {{ request('filter') === 'all' || request('filter') === null ? 'active' : '' }}">
+                    <a href="<?php echo e(route('manager-order-history-filter.get', ['filter' => 'all', 'branch_id' => encrypt($branch->id)])); ?>"
+                        class="filter filter--all <?php echo e(request('filter') === 'all' || request('filter') === null ? 'active' : ''); ?>">
                         <i class="ph ph-squares-four me-1"></i> All
                     </a>
-                    <a href="{{ route('manager-order-history-filter.get', ['filter' => 'today', 'branch_id' => encrypt($branch->id)]) }}"
-                        class="filter filter--today {{ request('filter') === 'today' ? 'active' : '' }}">
+                    <a href="<?php echo e(route('manager-order-history-filter.get', ['filter' => 'today', 'branch_id' => encrypt($branch->id)])); ?>"
+                        class="filter filter--today <?php echo e(request('filter') === 'today' ? 'active' : ''); ?>">
                         <i class="ph ph-calendar-today me-1"></i> Today
                     </a>
-                    <a href="{{ route('manager-order-history-filter.get', ['filter' => 'yesterday', 'branch_id' => encrypt($branch->id)]) }}"
-                        class="filter filter--yesterday {{ request('filter') === 'yesterday' ? 'active' : '' }}">
+                    <a href="<?php echo e(route('manager-order-history-filter.get', ['filter' => 'yesterday', 'branch_id' => encrypt($branch->id)])); ?>"
+                        class="filter filter--yesterday <?php echo e(request('filter') === 'yesterday' ? 'active' : ''); ?>">
                         <i class="ph ph-clock-counter-clockwise me-1"></i> Yesterday
                     </a>
-                    <a href="{{ route('manager-order-history-filter.get', ['filter' => 'this-month', 'branch_id' => encrypt($branch->id)]) }}"
-                        class="filter filter--this-month {{ request('filter') === 'this-month' ? 'active' : '' }}">
+                    <a href="<?php echo e(route('manager-order-history-filter.get', ['filter' => 'this-month', 'branch_id' => encrypt($branch->id)])); ?>"
+                        class="filter filter--this-month <?php echo e(request('filter') === 'this-month' ? 'active' : ''); ?>">
                         <i class="ph ph-calendar-blank me-1"></i> This Month
                     </a>
-                    <a href="{{ route('manager-order-history-filter.get', ['filter' => 'this-year', 'branch_id' => encrypt($branch->id)]) }}"
-                        class="filter filter--this-year {{ request('filter') === 'this-year' ? 'active' : '' }}">
+                    <a href="<?php echo e(route('manager-order-history-filter.get', ['filter' => 'this-year', 'branch_id' => encrypt($branch->id)])); ?>"
+                        class="filter filter--this-year <?php echo e(request('filter') === 'this-year' ? 'active' : ''); ?>">
                         <i class="ph ph-calendar me-1"></i> This Year
                     </a>
                 </div>
             </div>
 
             <div class="row order-summary mt-4 px-3" id="orderSummaryContainer">
-                @if (isset($orderSummary) && $orderSummary->isNotEmpty())
-                    @foreach ($orderSummary as $summary)
+                <?php if(isset($orderSummary) && $orderSummary->isNotEmpty()): ?>
+                    <?php $__currentLoopData = $orderSummary; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $summary): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div
                             class="col-lg-12 rounded shadow d-flex align-items-center p-2 border border-dark mt-2 order-item">
                             <div class="col-2 text-center mt-2">
@@ -58,31 +56,33 @@
                             </div>
                             <div class="col-10 flex-1">
                                 <p class="date fw-bold" style="font-size: 0.8rem;">
-                                    {{ Carbon\Carbon::parse($summary['date'])->format('l, F j, Y') }}
+                                    <?php echo e(Carbon\Carbon::parse($summary['date'])->format('l, F j, Y')); ?>
+
                                 </p>
                                 <div class="d-flex align-items-center gap-2 mt-1">
-                                    <p class="sales">Total Sales: &#8369; {{ number_format($summary['total_sales'], 2) }}
+                                    <p class="sales">Total Sales: &#8369; <?php echo e(number_format($summary['total_sales'], 2)); ?>
+
                                     </p>
                                     <p class="profit border-3 border-start border-success ps-2">Total Profit: &#8369;
-                                        {{ number_format($summary['total_profit'], 2) }}</p>
+                                        <?php echo e(number_format($summary['total_profit'], 2)); ?></p>
                                 </div>
                                 <div class="check-order d-flex mt-1">
                                     <button
                                         class="d-flex align-items-center py-1 px-2 bg-primary rounded-2 text-light border-0 view-receipt-btn"
-                                        data-branch-id="{{ $branch->id }}"
-                                        data-date="{{ Carbon\Carbon::parse($summary['date'])->format('Y-m-d') }}"
+                                        data-branch-id="<?php echo e($branch->id); ?>"
+                                        data-date="<?php echo e(Carbon\Carbon::parse($summary['date'])->format('Y-m-d')); ?>"
                                         style="font-size: 0.6rem;">
                                         View Receipt <i class="ph ph-eye ms-1"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
-                @else
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
                     <div class="mt-4 d-flex align-items-center justify-content-center" style="font-size: 0.8rem;">
                         <i class="ph ph-x-circle me-1" style="font-size: 1.25rem;"></i> No orders found for this filter.
                     </div>
-                @endif
+                <?php endif; ?>
                 <div class="d-none mt-4 d-flex align-items-center justify-content-center" id="noMatchesMessage"
                     style="font-size: 0.8rem;">
                     <i class="ph ph-x-circle me-1" style="font-size: 1.25rem;"></i> No matches found.
@@ -168,4 +168,6 @@
             }
         });
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('Layout.manager_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\city_burgers_pos_system\resources\views/Manager/manager_order_history.blade.php ENDPATH**/ ?>

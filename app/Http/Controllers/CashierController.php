@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
+use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\OrderGroup;
 use App\Models\User;
@@ -17,8 +19,9 @@ class CashierController extends Controller
 {
     public function viewCashierDashboard() {
         $user = Auth::user();
+        $branch = Branch::findOrFail($user->branch_id);
         if ($user) {
-            $drinks = ['Mountain Dew', 'Royal', 'Coke', 'Water', 'Sprite'];
+            $drinks = ['Mountain Dew', 'Royal', 'Coke', 'Water (CvSU)', 'Sprite', 'Water'];
 
             // Fetch the top 3 trending food items
             $trendingFood = DB::table('orders')
@@ -39,41 +42,55 @@ class CashierController extends Controller
                 ->first();
 
             // Return the view with the data
-            return view('Cashier.cashier_dashboard', compact('user', 'trendingFood', 'trendingDrink'));
+            return view('Cashier.cashier_dashboard', compact('user', 'trendingFood', 'trendingDrink' ,'branch'));
         }
         return redirect()->route('login.get');
     }
     public function viewCashierOrder() {
         $user = Auth::user();
+        $branch = Branch::findOrFail($user->branch_id);
         if ($user) {
-            // Only sum up the total sales where the order group is "Served"
+            // Retrieve the cashier's branch_id
+            $branchId = $user->branch_id;
+
+            if (!$branchId) {
+                return redirect()->back()->with('error', 'You are not assigned to any branch.');
+            }
+
+            // Only sum up the total sales for the cashier's branch where the order group is "Served"
             $totalSalesToday = Order::whereDate('created_at', today())
+                ->where('branch_id', $branchId) // Filter by cashier's branch
                 ->whereHas('orderGroup', function ($query) {
                     $query->where('status', 'Served');
                 })
                 ->sum(DB::raw('price * quantity'));
 
-            // Calculate total profit for today where the order group is "Served"
+            // Calculate total profit for today for the cashier's branch where the order group is "Served"
             $totalProfitToday = Order::whereDate('created_at', today())
+                ->where('branch_id', $branchId) // Filter by cashier's branch
                 ->whereHas('orderGroup', function ($query) {
                     $query->where('status', 'Served');
                 })
                 ->sum(DB::raw('profit * quantity'));
 
+            // Count the number of unique order groups with status 'Pending' for the cashier's branch
             $todayOrdersCount = OrderGroup::whereDate('created_at', today())
+                ->where('branch_id', $branchId) // Filter by cashier's branch
                 ->where('status', 'Pending')
-                ->count(); // This counts the number of unique order groups
+                ->count();
 
-            return view('Cashier.cashier_order', compact('user', 'totalSalesToday', 'totalProfitToday', 'todayOrdersCount'));
+
+            return view('Cashier.cashier_order', compact('user', 'totalSalesToday', 'totalProfitToday', 'todayOrdersCount', 'branch'));
         }
+
         return redirect()->route('login.get');
     }
-    public function postCashierOrder(Request $request)
-    {
+    public function postCashierOrder(Request $request) {
         // Log the incoming request data
         Log::info('Incoming request for postCashierOrder:', $request->all());
 
         try {
+            // Validate the incoming request
             $validated = $request->validate([
                 'customer_name' => 'nullable|string|max:255',
                 'payment_method' => 'required|string|max:255',
@@ -89,20 +106,30 @@ class CashierController extends Controller
             // Step 1: Handle e_receipt file upload
             $receiptPath = null;
             if ($request->hasFile('e_receipt')) {
-                $receiptPath = $request->file('e_receipt')->store('receipts'); // Store the e-receipt
+                $receiptPath = $request->file('e_receipt')->store('receipts', 'public'); // Store the e-receipt
             }
 
-            // Step 2: Create the Order Group
+            // Step 2: Get cashier's branch_id from authenticated user (assuming auth user is a cashier)
+            $branchId = Auth::user()->branch_id;
+
+
+            if (!$branchId) {
+                return response()->json(['message' => 'Cashier is not assigned to any branch.'], 400);
+            }
+
+            // Step 3: Create the Order Group
             $customerName = $validated['customer_name'] ?? 'N/A';
 
             $orderGroup = OrderGroup::create([
                 'payment_method' => $validated['payment_method'],
                 'customer_name' => $customerName,
                 'e_receipt' => $receiptPath, // Store the path if available
+                'branch_id' => $branchId, // Associate with the branch
             ]);
 
-            // Step 3: Attach each order item to the created Order Group
-            foreach ($validated['orders'] as $item) { // Use 'orders' instead of 'order'
+
+            // Step 4: Attach each order item to the created Order Group and assign the branch
+            foreach ($validated['orders'] as $item) {
                 // Create the Order and set profit automatically
                 Order::create([
                     'item' => $item['item'],
@@ -110,14 +137,15 @@ class CashierController extends Controller
                     'sauce' => $item['sauce'],
                     'image' => $item['image'],
                     'price' => floatval(str_replace(['₱', ' '], '', $item['price'])), // Convert price to float
-                    // 'profit' => Order::getProfitByItem($item['item']), // Automatically set profit based on item
                     'order_group_id' => $orderGroup->id, // Attach to the order group
+                    'branch_id' => $branchId, // Associate each order with the branch
                 ]);
             }
 
-            // Count the number of unique order groups with status 'Pending'
+            // Step 5: Count the number of unique order groups with status 'Pending' for the branch
             $todayOrdersCount = OrderGroup::whereDate('created_at', today())
                 ->where('status', 'Pending')
+                ->where('branch_id', $branchId) // Filter by branch
                 ->count();
 
             return response()->json([
@@ -137,9 +165,16 @@ class CashierController extends Controller
         }
     }
     public function getPendingOrders() {
-        // Get today's pending orders grouped by order_group_id
+        // Get the current user (cashier) and their branch_id
+        $user = Auth::user();
+        $branchId = $user->branch_id;
+
+        // Get today's pending orders for the cashier's branch, grouped by order_group_id
         $todayOrders = Order::whereDate('created_at', today())
-                            ->where('status', 'Pending')
+                            ->whereHas('orderGroup', function($query) use ($branchId) {
+                                $query->where('branch_id', $branchId) // Filter by branch_id in the order group
+                                      ->where('status', 'Pending'); // Only include pending order groups
+                            })
                             ->with('orderGroup') // Eager load the related order group
                             ->get()
                             ->groupBy('order_group_id');
@@ -150,7 +185,7 @@ class CashierController extends Controller
             $orderGroup = $orders->first()->orderGroup; // Get the first order's group details
 
             // Only include groups that are still pending
-            if ($orderGroup->status === 'Pending') {
+            if ($orderGroup && $orderGroup->status === 'Pending') {
                 $response[] = [
                     'order_group_id' => $groupId,
                     'status' => $orderGroup->status,
@@ -161,10 +196,24 @@ class CashierController extends Controller
             }
         }
 
+        // Check if there are no pending orders
+        if (empty($response)) {
+            return response()->json([
+                'message' => 'No pending orders found for today.',
+                'data' => []
+            ]);
+        }
+
         return response()->json($response);
     }
-    public function updateGroupStatus($orderGroupId)
-    {
+
+    public function updateGroupStatus($orderGroupId) {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized access.'], 403);
+        }
+
         $orderGroup = OrderGroup::find($orderGroupId);
 
         if ($orderGroup) {
@@ -172,15 +221,17 @@ class CashierController extends Controller
             $orderGroup->status = 'Served';
             $orderGroup->save();
 
-            // Now calculate today's total sales where the order group is "Served"
+            // Now calculate today's total sales where the order group is "Served" and belongs to the user's branch
             $updatedTotalSales = Order::whereDate('created_at', today())
+                ->where('branch_id', $user->branch_id) // Filter by branch_id
                 ->whereHas('orderGroup', function ($query) {
                     $query->where('status', 'Served');
                 })
                 ->sum(DB::raw('price * quantity'));
 
-            // Calculate today's total profit where the order group is "Served"
+            // Calculate today's total profit where the order group is "Served" and belongs to the user's branch
             $updatedTotalProfit = Order::whereDate('created_at', today())
+                ->where('branch_id', $user->branch_id) // Filter by branch_id
                 ->whereHas('orderGroup', function ($query) {
                     $query->where('status', 'Served');
                 })
@@ -195,6 +246,7 @@ class CashierController extends Controller
 
         return response()->json(['message' => 'Order group not found!'], 404);
     }
+
     public function cancelOrder($orderGroupId) {
         // Retrieve the order group
         $orderGroup = OrderGroup::with('orders')->find($orderGroupId);
@@ -230,10 +282,11 @@ class CashierController extends Controller
             return redirect()->route('login.get');
         }
 
-        // Retrieve all orders that belong to 'Served' order groups
+        // Retrieve all orders that belong to 'Served' order groups and match the cashier's branch_id
         $orders = Order::whereHas('orderGroup', function ($query) {
             $query->where('status', 'Served');
-        })->get();
+        })->where('branch_id', $user->branch_id) // Filter by the cashier's branch_id
+        ->get();
 
         // Group by date and calculate total sales and profit for each day
         $orderSummary = $orders->groupBy(function ($order) {
@@ -274,26 +327,29 @@ class CashierController extends Controller
         // Determine the selected filter
         $filter = $request->input('filter', 'all');
 
+        // Initialize the query builder for orders
+        $query = Order::where('branch_id', $user->branch_id); // Filter by branch_id
+
         switch ($filter) {
             case 'today':
-                $orders = Order::whereDate('created_at', $today)->get();
+                $orders = $query->whereDate('created_at', $today)->get();
                 $dateLabel = $today->format('Y-m-d');
                 break;
             case 'yesterday':
-                $orders = Order::whereDate('created_at', $yesterday)->get();
+                $orders = $query->whereDate('created_at', $yesterday)->get();
                 $dateLabel = $yesterday->format('Y-m-d');
                 break;
             case 'this-month':
-                $orders = Order::whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])->get();
+                $orders = $query->whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])->get();
                 $dateLabel = now()->format('F Y'); // This month label (e.g., September 2024)
                 break;
             case 'this-year':
-                $orders = Order::whereBetween('created_at', [$thisYearStart, $thisYearEnd])->get();
+                $orders = $query->whereBetween('created_at', [$thisYearStart, $thisYearEnd])->get();
                 $dateLabel = now()->format('Y'); // This year label (e.g., 2024)
                 break;
             default:
                 // Handle case for 'all' or other defaults
-                $orders = Order::all();
+                $orders = $query->get();
                 $dateLabel = 'All Time';
                 break;
         }
@@ -318,7 +374,8 @@ class CashierController extends Controller
         // Pass the data to the view
         return view('Cashier.cashier_order_history', compact('user', 'orderSummary', 'dateLabel', 'filter'));
     }
-    public function searchOrderHistory(Request $request){
+
+    public function searchOrderHistory(Request $request) {
         $user = Auth::user();
 
         if (!$user) {
@@ -327,7 +384,7 @@ class CashierController extends Controller
 
         // Get the search query
         $searchQuery = $request->input('searchQueryInput');
-        $orders = Order::query();
+        $orders = Order::query()->where('branch_id', $user->branch_id); // Filter by branch_id
 
         // Check if searchQuery is not empty and filter accordingly
         if (!empty($searchQuery)) {
@@ -406,12 +463,10 @@ class CashierController extends Controller
             ]);
         }
 
-
-
-
         // For non-AJAX requests, return the view normally
         return view('Cashier.cashier_order_history', compact('user', 'orderSummary'));
     }
+
     public function viewReceipt(Request $request) {
         $user = Auth::user();
         $date = $request->query('date');
@@ -422,8 +477,9 @@ class CashierController extends Controller
             return abort(404, 'Date parameter missing');
         }
 
-        // Fetch all order groups for that date with status "Served", along with their orders
-        $orderGroups = OrderGroup::where('status', 'Served') // Add status condition
+        // Fetch all order groups for that date with status "Served", filtered by branch
+        $orderGroups = OrderGroup::where('status', 'Served')
+            ->where('branch_id', $user->branch_id)
             ->whereHas('orders', function ($query) use ($date) {
                 $query->whereDate('created_at', $date);
             })
@@ -434,25 +490,43 @@ class CashierController extends Controller
             // Calculate the total sales for the day
             $totalSales = $orderGroups->sum(function ($group) {
                 return $group->orders->sum(function ($order) {
-                    return $order->price * $order->quantity; // Assuming 'price' and 'quantity' are the columns
+                    return $order->price * $order->quantity;
                 });
             });
 
             // Calculate the total profit for the day
             $totalProfit = $orderGroups->sum(function ($group) {
                 return $group->orders->sum(function ($order) {
-                    return $order->profit * $order->quantity; // Using actual profit values
+                    return $order->profit * $order->quantity;
                 });
             });
 
+            // Fetch the unique products and their total quantities
+            $uniqueProducts = $orderGroups->flatMap(function ($group) {
+                return $group->orders;
+            })->groupBy('item') // Group by item_name
+              ->map(function ($orders, $itemName) {
+                  // Return the item, total quantity ordered, and other attributes
+                  return [
+                      'item_name' => $itemName,
+                      'total_quantity' => $orders->sum('quantity'),
+                      'image' => $orders->first()->image, // Assuming each item has the same image
+                      'sauce' => $orders->first()->sauce // Assuming each item has the same sauce
+                  ];
+              });
+
+            // Format the date
             $carbonDate = Carbon::parse($date);
             $formattedDate = $carbonDate->format('l, F j, Y'); // Format as 'Thursday, September 28, 2024'
 
-            return view('Cashier.cashier_order_receipt', compact('user', 'orderGroups', 'formattedDate', 'totalSales', 'totalProfit'));
+            return view('Cashier.cashier_order_receipt', compact('user', 'orderGroups', 'formattedDate', 'totalSales', 'totalProfit', 'uniqueProducts'));
         } else {
             return redirect()->back()->with('error', 'Receipt not found for the selected date.');
         }
     }
+
+
+
     public function downloadReceipt($id) {
         // Fetch the order group based on the ID
         $orderGroup = OrderGroup::findOrFail($id);

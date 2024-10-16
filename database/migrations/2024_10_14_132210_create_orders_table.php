@@ -21,7 +21,6 @@ class CreateOrdersTable extends Migration
             $table->string('image')->nullable();
             $table->decimal('price', 8, 2)->nullable();
             $table->decimal('profit', 10, 2)->default(0);
-            $table->string('status')->default('Pending');
             $table->timestamps();
         });
     }

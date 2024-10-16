@@ -1,23 +1,17 @@
-@extends('Layout.manager_layout')
+<?php $__env->startSection('page-title', 'City Burgers POS | My Profile'); ?>
 
-@section('page-title', 'City Burgers POS | View Cashier Profile')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="container-fluid p-0" id="profileContainer">
         <div class="profile-header p-3">
-            @include('Partial.manager_navbar')
-            <div class="return my-2 text-white" style="position: absolute; ">
-                <a href="{{ route('manager-dashboard.get') }}" class="text-white"><i
-                        class="ph ph-arrow-circle-left me-1"></i></a> Back
-
-            </div>
+            <?php echo $__env->make('Partial.cashier_navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             <div class="profile-picture d-flex align-items-center flex-column justify-content-center ">
                 <canvas id="profile-pic" class="rounded-circle" width="100" height="100"></canvas>
-                <p class="mt-2 mb-0 text-muted fs-6">&commat;{{ explode(' ', $cashier->name)[0] }}</p>
+                <p class="mt-2 mb-0 text-muted fs-6">&commat;<?php echo e(explode(' ', $user->name)[0]); ?></p>
 
-                <div class="fs-3 fw-bold">{{ $cashier->name }}</div>
+                <div class="fs-3 fw-bold"><?php echo e($user->name); ?></div>
                 <div class="mb-2">
-                    {{ $cashier->contact_number }} | Joined {{ $cashier->created_at->format('F Y') }}
+                    <?php echo e($user->contact_number); ?> | Joined <?php echo e($user->created_at->format('F Y')); ?>
+
                 </div>
             </div>
             <div class="information-profile p-3 rounded-3 mt-3" style="background: #212225;">
@@ -29,7 +23,8 @@
                             <span>Email</span>
                         </div>
                         <div>
-                            {{ $cashier->email }}
+                            <?php echo e($user->email); ?>
+
                         </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between text-light mt-3">
@@ -38,7 +33,8 @@
                             <span>Phone</span>
                         </div>
                         <div>
-                            {{ $cashier->contact_number }}
+                            <?php echo e($user->contact_number); ?>
+
                         </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between text-light mt-3">
@@ -47,7 +43,8 @@
                             <span>Joined</span>
                         </div>
                         <div>
-                            {{ $cashier->created_at->format('F Y') }}
+                            <?php echo e($user->created_at->format('F Y')); ?>
+
                         </div>
                     </div>
                 </div>
@@ -119,9 +116,11 @@
         }
 
         // Safely pass the user's name to the JavaScript function
-        const userName = @json($cashier->name);
+        const userName = <?php echo json_encode($user->name, 15, 512) ?>;
         if (userName) {
             generateProfilePic(userName);
         }
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('Layout.cashier_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\city_burgers_pos_system\resources\views/Cashier/cashier_profile.blade.php ENDPATH**/ ?>

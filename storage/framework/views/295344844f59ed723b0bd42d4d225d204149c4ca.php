@@ -1,11 +1,9 @@
-@extends('Layout.manager_layout')
+<?php $__env->startSection('page-title', 'City Burgers POS | Cashier Management'); ?>
 
-@section('page-title', 'City Burgers POS | Cashier Management')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="container-fluid bg-white" id="orderHistory" style="overflow-x: hidden;">
         <div class="return p-3 text-dark">
-            <a href="{{ route('manager-dashboard.get') }}" class="text-dark"><i class="ph ph-arrow-left me-1"></i></a>
+            <a href="<?php echo e(route('manager-dashboard.get')); ?>" class="text-dark"><i class="ph ph-arrow-left me-1"></i></a>
         </div>
         <div class="header-title" style="left:29%;">
             <div class="fs-6 fw-bold">Cashier Management</div>
@@ -31,32 +29,32 @@
                     style="font-size: 1.5rem;"></i>Cashier Accounts
             </div>
             <div class="cashier-grid py-3">
-                @if ($cashierUsers->isNotEmpty())
-                    @foreach ($cashierUsers as $cashier)
+                <?php if($cashierUsers->isNotEmpty()): ?>
+                    <?php $__currentLoopData = $cashierUsers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cashier): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="cashier-card shadow-sm" style="position: relative;">
                             <div style="position: absolute; top: 5px; right: 5px;">
                                 <i class="fa-solid fa-trash text-danger delete-cashier" style="font-size: 1.2rem;"
-                                    data-id="{{ $cashier->id }}"></i>
+                                    data-id="<?php echo e($cashier->id); ?>"></i>
                             </div>
                             <div class="profile-picture mb-2">
-                                <img src="{{ $cashier->profile ? '/storage/profiles/' . $cashier->profile : asset('assets/images/user.jpg') }}"
+                                <img src="<?php echo e($cashier->profile ? '/storage/profiles/' . $cashier->profile : asset('assets/images/user.jpg')); ?>"
                                     class="rounded-circle img-fluid" alt="Cashier Profile" width="80" height="80">
                             </div>
                             <div class="cashier-info text-center">
-                                <span class="fw-bold mb-1" style="font-size: 0.8rem;">{{ $cashier->name }}</span>
+                                <span class="fw-bold mb-1" style="font-size: 0.8rem;"><?php echo e($cashier->name); ?></span>
                                 <span class="text-secondary text-capitalize"
-                                    style="font-size: 0.8rem;">{{ $cashier->contact_number }} | {{ $cashier->sex }}</span>
-                                <a href="{{ route('cashier.profile.view', encrypt($cashier->id)) }}"
+                                    style="font-size: 0.8rem;"><?php echo e($cashier->contact_number); ?> | <?php echo e($cashier->sex); ?></span>
+                                <a href="<?php echo e(route('cashier.profile.view', encrypt($cashier->id))); ?>"
                                     class="btn btn-dark btn-sm d-flex justify-content-center mt-2">View
                                     Profile</a>
                             </div>
                         </div>
-                    @endforeach
-                @else
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
                     <div class="col-12 text-center text-secondary">
                         <p>No cashiers found.</p>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
         <!--------- CREATE NEW CASHIER MODAL ------------>
@@ -168,7 +166,7 @@
                     url: '/manager/cashier/delete/' + cashierId,
                     type: 'DELETE',
                     data: {
-                        "_token": "{{ csrf_token() }}", // Include CSRF token for Laravel
+                        "_token": "<?php echo e(csrf_token()); ?>", // Include CSRF token for Laravel
                     },
                     success: function(response) {
                         if (response.status === 'success') {
@@ -220,10 +218,10 @@
 
             // Send AJAX request to the server
             $.ajax({
-                url: "{{ route('cashier.create') }}",
+                url: "<?php echo e(route('cashier.create')); ?>",
                 type: 'POST',
                 data: {
-                    "_token": "{{ csrf_token() }}", // Laravel CSRF token
+                    "_token": "<?php echo e(csrf_token()); ?>", // Laravel CSRF token
                     "email": email,
                     "password": password,
                     "name": name,
@@ -245,7 +243,7 @@
                                     <i class="fa-solid fa-trash text-danger delete-cashier" style="font-size: 1.2rem;" data-id="${response.cashier.id}"></i>
                                 </div>
                                 <div class="profile-picture mb-2">
-                                    <img src="{{ asset('assets/images/user.jpg') }}" class="rounded-circle img-fluid" alt="Cashier Profile" width="80" height="80">
+                                    <img src="<?php echo e(asset('assets/images/user.jpg')); ?>" class="rounded-circle img-fluid" alt="Cashier Profile" width="80" height="80">
                                 </div>
                                 <div class="cashier-info text-center">
                                     <span class="fw-bold mb-1" style="font-size: 0.8rem;">${response.cashier.name}</span>
@@ -286,4 +284,6 @@
     </script>
 
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('Layout.manager_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\city_burgers_pos_system\resources\views/Manager/manager_cashier_management.blade.php ENDPATH**/ ?>

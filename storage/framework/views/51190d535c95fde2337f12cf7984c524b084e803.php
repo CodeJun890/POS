@@ -1,11 +1,9 @@
-@extends('Layout.manager_layout')
+<?php $__env->startSection('page-title', 'City Burgers POS | Branch Management'); ?>
 
-@section('page-title', 'City Burgers POS | Branch Management')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="container-fluid bg-white" id="orderHistory" style="overflow-x: hidden;">
         <div class="return p-3 text-dark">
-            <a href="{{ route('manager-dashboard.get') }}" class="text-dark"><i class="ph ph-arrow-left me-1"></i></a>
+            <a href="<?php echo e(route('manager-dashboard.get')); ?>" class="text-dark"><i class="ph ph-arrow-left me-1"></i></a>
         </div>
         <div class="header-title" style="left:29%;">
             <div class="fs-6 fw-bold">Branch Management</div>
@@ -32,32 +30,32 @@
             </div>
 
             <div class="branch-grid py-3">
-                @if ($branches->isNotEmpty())
-                    @foreach ($branches as $branch)
+                <?php if($branches->isNotEmpty()): ?>
+                    <?php $__currentLoopData = $branches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $branch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="branch-card shadow-sm" style="position: relative;">
                             <div style="position: absolute; top: 5px; right: 5px;">
                                 <i class="fa-solid fa-trash text-danger delete-branch" style="font-size: 1.2rem;"
-                                    data-id="{{ $branch->id }}"></i>
+                                    data-id="<?php echo e($branch->id); ?>"></i>
                             </div>
                             <div class="profile-picture mb-2">
-                                <img src="{{ $branch->image ? '/storage/' . $branch->image : asset('assets/images/location.png') }}"
+                                <img src="<?php echo e($branch->image ? '/storage/' . $branch->image : asset('assets/images/location.png')); ?>"
                                     class="rounded-circle img-fluid" alt="Branch Image" width="150" height="150">
                             </div>
                             <div class="branch-info text-center">
-                                <span class="fw-bold mb-1" style="font-size: 0.8rem;">{{ $branch->name }}</span>
+                                <span class="fw-bold mb-1" style="font-size: 0.8rem;"><?php echo e($branch->name); ?></span>
                                 <span class="text-secondary text-capitalize"
-                                    style="font-size: 0.8rem;">{{ $branch->address }}</span>
-                                <a href="{{ route('branch-management.view', encrypt($branch->id)) }}"
+                                    style="font-size: 0.8rem;"><?php echo e($branch->address); ?></span>
+                                <a href="<?php echo e(route('branch-management.view', encrypt($branch->id))); ?>"
                                     class="btn btn-dark btn-sm d-flex justify-content-center mt-2">View
                                     Branch</a>
                             </div>
                         </div>
-                    @endforeach
-                @else
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
                     <div class="text-secondary">
                         <p class="text-center my-4">No branches found.</p>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
 
         </div>
@@ -74,7 +72,7 @@
                             <div class="row justify-content-center align-items-center">
                                 <div class="col-lg-12 d-flex justify-content-center align-items-center">
                                     <div class="branch-image" style="position: relative;">
-                                        <img src="{{ asset('assets/images/location.png') }}"
+                                        <img src="<?php echo e(asset('assets/images/location.png')); ?>"
                                             class="img-fluid border border-1" width="150px" height="150px" alt="">
                                         <label for="branchImage" id="cameraIcon"
                                             style="right: -5%; bottom:0; background: red;"><i
@@ -158,7 +156,7 @@
                     url: '/manager/branch/delete/' + branchId,
                     type: 'DELETE',
                     data: {
-                        "_token": "{{ csrf_token() }}", // Include CSRF token for Laravel
+                        "_token": "<?php echo e(csrf_token()); ?>", // Include CSRF token for Laravel
                     },
                     success: function(response) {
                         if (response.status === 'success') {
@@ -231,14 +229,14 @@
 
             // Create a FormData object for file upload
             let formData = new FormData();
-            formData.append("_token", "{{ csrf_token() }}"); // Laravel CSRF token
+            formData.append("_token", "<?php echo e(csrf_token()); ?>"); // Laravel CSRF token
             formData.append("name", branchName);
             formData.append("address", branchAddress);
             formData.append("image", branchImage);
 
             // Send AJAX request to the server
             $.ajax({
-                url: "{{ route('branch-management.post') }}",
+                url: "<?php echo e(route('branch-management.post')); ?>",
                 type: 'POST',
                 data: formData,
                 processData: false, // Required for file uploads
@@ -277,7 +275,7 @@
                         document.getElementById('branchName').value = '';
                         document.getElementById('branchAddress').value = '';
                         document.querySelector('.branch-image img').src =
-                            "{{ asset('assets/images/location.png') }}";
+                            "<?php echo e(asset('assets/images/location.png')); ?>";
 
                         // Close the modal
                         $('#createNewBranch').modal('hide');
@@ -340,4 +338,6 @@
     </script>
 
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('Layout.manager_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\city_burgers_pos_system\resources\views/Manager/manager_branch_management.blade.php ENDPATH**/ ?>

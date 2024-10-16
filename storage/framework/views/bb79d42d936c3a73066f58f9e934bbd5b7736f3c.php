@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <!--- LOCAL CSS ---->
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/style.css')); ?>">
     <!--- FONTAWESOME ICON CDN ---->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <!--- PHOSPHOR ICON CDN ---->
@@ -18,19 +18,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
         rel="stylesheet">
     <!--- CITY BURGERS LOGO ---->
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo.jpg') }}">
+    <link rel="shortcut icon" href="<?php echo e(asset('assets/images/logo.jpg')); ?>">
     <!--- BOOTSTRAP CSS CDN ---->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!--- IZITOAST CSS ---->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css" />
-    <title>@yield('page-title', 'City Burgers POS')</title>
+    <title><?php echo $__env->yieldContent('page-title', 'City Burgers POS'); ?></title>
 
 </head>
 
 <body>
 
     <div class="cashier-container">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </div>
     <div class="announcement-container d-none">
         <iframe src="https://giphy.com/embed/Z5xk7fGO5FjjTElnpT" width="180" height="180" style=""
@@ -39,13 +39,13 @@
             Use smaller screen size phone <i class="fa-solid fa-mobile-screen ms-2"
                 style="font-size: 2rem; color:rgb(92, 92, 92);"></i>
         </div>
-        @auth
+        <?php if(auth()->guard()->check()): ?>
             <div class="d-flex justify-content-center align-items-center">
                 <div class="bg-danger rounded-2 fst-italic mt-2 p-2 px-3">
-                    <a href="{{ route('logout.get') }}" class="text-light text-decoration-none fw-bold ">Logout</a>
+                    <a href="<?php echo e(route('logout.get')); ?>" class="text-light text-decoration-none fw-bold ">Logout</a>
                 </div>
             </div>
-        @endauth
+        <?php endif; ?>
     </div>
     <!--- JQUERY CDN ---->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -154,7 +154,7 @@
                                     transitionOut: 'fadeOut'
                                 }, toast, 'button');
                                 // Redirect to logout route
-                                window.location.href = "{{ route('logout.get') }}";
+                                window.location.href = "<?php echo e(route('logout.get')); ?>";
                             }, true],
                             ['<button>No</button>', function(instance, toast) {
                                 instance.hide({
@@ -997,3 +997,4 @@
 </body>
 
 </html>
+<?php /**PATH C:\xampp\htdocs\city_burgers_pos_system\resources\views/Layout/cashier_layout.blade.php ENDPATH**/ ?>

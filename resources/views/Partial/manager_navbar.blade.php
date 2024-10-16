@@ -43,16 +43,21 @@
             <li class="nav-item mb-3">
                 <i class="ph ph-users-three"></i>
                 <a class="nav-link text-white" href="{{ route('cashier-management.get') }}">
-                    Cashier Management
+                    Manage Cashier
                 </a>
             </li>
-            {{-- <li class="nav-item mb-3">
+            <li class="nav-item mb-3">
+                <i class="ph ph-users-three"></i>
+                <a class="nav-link text-white" href="{{ route('inventory-management.get') }}">
+                    Manage Inventory
+                </a>
+            </li>
+            <li class="nav-item mb-3">
                 <i class="ph ph-buildings"></i>
                 <a class="nav-link text-white" href="{{ route('branch-management.get') }}">
-                    Branch Management
+                    Manage Branch
                 </a>
-            </li> --}}
-
+            </li>
             <li class="nav-item">
                 <i class="ph-sign-out"></i>
                 <a id="logout-btn" class="nav-link text-danger">

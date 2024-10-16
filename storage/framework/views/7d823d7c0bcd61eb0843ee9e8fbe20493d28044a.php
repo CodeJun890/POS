@@ -1,21 +1,19 @@
-@extends('Layout.cashier_layout')
+<?php $__env->startSection('page-title', 'City Burgers POS | New Order'); ?>
 
-@section('page-title', 'City Burgers POS | New Order')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
     <div class="container-fluid p-0" id="orderContainer" style="overflow-x: hidden;">
 
         <div class="order-header p-3 w-100">
             <div class="bg-success w-100 rounded-2 cashier-branch">
-                <div class="text-center text-light fw-bold py-2">Branch: <span class="fst-italic">{{ $branch->name }}</span>
+                <div class="text-center text-light fw-bold py-2">Branch: <span class="fst-italic"><?php echo e($branch->name); ?></span>
                 </div>
             </div>
-            @include('Partial.cashier_navbar')
+            <?php echo $__env->make('Partial.cashier_navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
             <div class="return mb-2 text-white">
-                <a href="{{ route('cashier-dashboard.get') }}" class="text-white"><i
+                <a href="<?php echo e(route('cashier-dashboard.get')); ?>" class="text-white"><i
                         class="ph ph-arrow-circle-left me-1"></i></a> Back
                 <div class="header-title" style="position: absolute; top:7px; left: 50%; transform: translateX(-50%);">
                     <div class="fs-6 fw-bold text-white text-center text-uppercase">Create Order</div>
@@ -26,12 +24,12 @@
                 <div class="d-flex justify-content-around">
                     <div class="text-center">
                         <div class="fs-6 fw-bold text-uppercase">Total</div>
-                        <p class="m-0 total-sales">&#8369; {{ number_format($totalSalesToday, 2) }}</p>
+                        <p class="m-0 total-sales">&#8369; <?php echo e(number_format($totalSalesToday, 2)); ?></p>
                     </div>
 
                     <div class="text-center">
                         <div class="fs-6 fw-bold text-uppercase">Profit</div>
-                        <p class="m-0 total-profit">&#8369; {{ number_format($totalProfitToday, 2) }}</p>
+                        <p class="m-0 total-profit">&#8369; <?php echo e(number_format($totalProfitToday, 2)); ?></p>
                     </div>
 
                 </div>
@@ -47,13 +45,13 @@
                         Order Status
                         <div class="fw-bold text-light px-2 rounded-circle"
                             style="position: absolute; top:-10px; right: -8px; background: red;">
-                            <span id="totalPendingOrders"> {{ $todayOrdersCount }}</span>
+                            <span id="totalPendingOrders"> <?php echo e($todayOrdersCount); ?></span>
                         </div>
                     </div>
 
                 </div>
                 <div class="text-center mb-2">
-                    <div class="date-today">{{ now()->format('l, F d, Y') }}</div>
+                    <div class="date-today"><?php echo e(now()->format('l, F d, Y')); ?></div>
                 </div>
                 <div class="lead fw-bold">Select Order</div>
                 <div class="order-counter w-100">
@@ -63,7 +61,7 @@
                         <div class="burger-grid">
                             <div class="burger-box" data-burger="Buy 1 Take 1 Sliders" data-unique-id="burger-1">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/burger-1.jpg') }}" alt="Buy 1 Take 1 Sliders">
+                                    <img src="<?php echo e(asset('assets/images/burger-1.jpg')); ?>" alt="Buy 1 Take 1 Sliders">
                                 </div>
                                 <div class="box-title">Buy 1 Take 1 Sliders</div>
                                 <div class="box-price price fw-bold">
@@ -72,7 +70,7 @@
                             </div>
                             <div class="burger-box" data-burger="Manila Burger" data-unique-id="burger-2">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/burger-2.jpg') }}" alt="Manila Burger">
+                                    <img src="<?php echo e(asset('assets/images/burger-2.jpg')); ?>" alt="Manila Burger">
                                 </div>
                                 <div class="box-title">Manila Burger</div>
                                 <div class="box-price price fw-bold">
@@ -81,7 +79,7 @@
                             </div>
                             <div class="burger-box" data-burger="Berlin Burger Steak" data-unique-id="burger-3">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/burger-3.jpg') }}" alt="Berlin Burger Steak">
+                                    <img src="<?php echo e(asset('assets/images/burger-3.jpg')); ?>" alt="Berlin Burger Steak">
                                 </div>
                                 <div class="box-title">Berlin Burger Steak</div>
                                 <div class="box-price price fw-bold">
@@ -90,7 +88,7 @@
                             </div>
                             <div class="burger-box" data-burger="New York Burger" data-unique-id="burger-4">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/burger-4.jpg') }}" alt="New York Burger">
+                                    <img src="<?php echo e(asset('assets/images/burger-4.jpg')); ?>" alt="New York Burger">
                                 </div>
                                 <div class="box-title">New York Burger</div>
                                 <div class="box-price price fw-bold">
@@ -104,7 +102,7 @@
                         <div class="fries-grid">
                             <div class="fries-box" data-fries="French Fries(Solo)" data-unique-id="fries-1">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/fries-1.jpg') }}" alt="French Fries">
+                                    <img src="<?php echo e(asset('assets/images/fries-1.jpg')); ?>" alt="French Fries">
                                 </div>
                                 <div class="box-title">French Fries (Solo)</div>
                                 <div class="box-price price fw-bold">
@@ -113,7 +111,7 @@
                             </div>
                             <div class="fries-box" data-fries="French Fries(Barkada)" data-unique-id="fries-2">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/fries-2.jpg') }}" alt="French Fries">
+                                    <img src="<?php echo e(asset('assets/images/fries-2.jpg')); ?>" alt="French Fries">
                                 </div>
                                 <div class="box-title">French Fries (Barkada)</div>
                                 <div class="box-price price fw-bold">
@@ -127,7 +125,7 @@
                         <div class="drink-grid">
                             <div class="drink-box" data-drink="Mountain Dew" data-unique-id="drink-1">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/drink-1.jpg') }}" alt="Mountain Dew">
+                                    <img src="<?php echo e(asset('assets/images/drink-1.jpg')); ?>" alt="Mountain Dew">
                                 </div>
                                 <div class="box-title">Mountain Dew</div>
                                 <div class="box-price price fw-bold">
@@ -136,7 +134,7 @@
                             </div>
                             <div class="drink-box" data-drink="Royal" data-unique-id="drink-2">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/drink-2.jpg') }}" alt="Royal">
+                                    <img src="<?php echo e(asset('assets/images/drink-2.jpg')); ?>" alt="Royal">
                                 </div>
                                 <div class="box-title">Royal</div>
                                 <div class="box-price price fw-bold">
@@ -145,7 +143,7 @@
                             </div>
                             <div class="drink-box" data-drink="Sprite" data-unique-id="drink-3">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/drink-3.jpg') }}" alt="Sprite">
+                                    <img src="<?php echo e(asset('assets/images/drink-3.jpg')); ?>" alt="Sprite">
                                 </div>
                                 <div class="box-title">Sprite</div>
                                 <div class="box-price price fw-bold">
@@ -154,7 +152,7 @@
                             </div>
                             <div class="drink-box" data-drink="Coke" data-unique-id="drink-4">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/drink-4.jpg') }}" alt="Coke">
+                                    <img src="<?php echo e(asset('assets/images/drink-4.jpg')); ?>" alt="Coke">
                                 </div>
                                 <div class="box-title">Coke</div>
                                 <div class="box-price price fw-bold">
@@ -163,12 +161,12 @@
                             </div>
                             <div class="drink-box" data-drink="Coke" data-unique-id="drink-5">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/drink-5.jpg') }}" alt="Water">
+                                    <img src="<?php echo e(asset('assets/images/drink-5.jpg')); ?>" alt="Water">
                                 </div>
                                 <div class="box-title">
-                                    {{ $branch->name === 'CvSU Main Indang' ? 'Water (CvSU)' : 'Water' }}</div>
+                                    <?php echo e($branch->name === 'CvSU Main Indang' ? 'Water (CvSU)' : 'Water'); ?></div>
                                 <div class="box-price price fw-bold">
-                                    <span>&#8369; {{ $branch->name === 'CvSU Main Indang' ? '15' : '30' }}</span>
+                                    <span>&#8369; <?php echo e($branch->name === 'CvSU Main Indang' ? '15' : '30'); ?></span>
                                 </div>
                             </div>
                         </div>
@@ -178,7 +176,7 @@
                         <div class="addons-grid">
                             <div class="addons-box" data-drink="Rice" data-unique-id="addons-1">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/addons-rice.jpg') }}" alt="Egg">
+                                    <img src="<?php echo e(asset('assets/images/addons-rice.jpg')); ?>" alt="Egg">
                                 </div>
                                 <div class="box-title">Rice</div>
                                 <div class="box-price price fw-bold">
@@ -187,7 +185,7 @@
                             </div>
                             <div class="addons-box" data-drink="Egg" data-unique-id="addons-2">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/addons-1.jpg') }}" alt="Egg">
+                                    <img src="<?php echo e(asset('assets/images/addons-1.jpg')); ?>" alt="Egg">
                                 </div>
                                 <div class="box-title">Egg</div>
                                 <div class="box-price price fw-bold">
@@ -196,7 +194,7 @@
                             </div>
                             <div class="addons-box" data-drink="Lettuce" data-unique-id="addons-3">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/addons-2.jpg') }}" alt="Lettuce">
+                                    <img src="<?php echo e(asset('assets/images/addons-2.jpg')); ?>" alt="Lettuce">
                                 </div>
                                 <div class="box-title">Lettuce</div>
                                 <div class="box-price price fw-bold">
@@ -205,7 +203,7 @@
                             </div>
                             <div class="addons-box" data-drink="Tomato" data-unique-id="addons-4">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/addons-3.jpg') }}" alt="Tomato">
+                                    <img src="<?php echo e(asset('assets/images/addons-3.jpg')); ?>" alt="Tomato">
                                 </div>
                                 <div class="box-title">Tomato</div>
                                 <div class="box-price price fw-bold">
@@ -214,7 +212,7 @@
                             </div>
                             <div class="addons-box" data-drink="Garlic Mayo" data-unique-id="addons-5">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-1.png') }}" alt="Garlic Mayo">
+                                    <img src="<?php echo e(asset('assets/images/sauce-1.png')); ?>" alt="Garlic Mayo">
                                 </div>
                                 <div class="box-title">Garlic Mayo</div>
                                 <div class="box-price price fw-bold">
@@ -223,7 +221,7 @@
                             </div>
                             <div class="addons-box" data-drink="Garlic BBQ" data-unique-id="addons-6">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-3.jpg') }}" alt="Garlic BBQ">
+                                    <img src="<?php echo e(asset('assets/images/sauce-3.jpg')); ?>" alt="Garlic BBQ">
                                 </div>
                                 <div class="box-title">Garlic BBQ</div>
                                 <div class="box-price price fw-bold">
@@ -232,7 +230,7 @@
                             </div>
                             <div class="addons-box" data-drink="Kebab" data-unique-id="addons-7">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-2.jpg') }}" alt="Kebab">
+                                    <img src="<?php echo e(asset('assets/images/sauce-2.jpg')); ?>" alt="Kebab">
                                 </div>
                                 <div class="box-title">Kebab</div>
                                 <div class="box-price price fw-bold">
@@ -241,7 +239,7 @@
                             </div>
                             <div class="addons-box" data-drink="Yangnyeom" data-unique-id="addons-8">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-4.jpg') }}" alt="Yangnyeom">
+                                    <img src="<?php echo e(asset('assets/images/sauce-4.jpg')); ?>" alt="Yangnyeom">
                                 </div>
                                 <div class="box-title">Yangnyeom</div>
                                 <div class="box-price price fw-bold">
@@ -250,7 +248,7 @@
                             </div>
                             <div class="addons-box" data-drink="Cheese Sauce" data-unique-id="addons-9">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-5.jpg') }}" alt="Cheese Sauce">
+                                    <img src="<?php echo e(asset('assets/images/sauce-5.jpg')); ?>" alt="Cheese Sauce">
                                 </div>
                                 <div class="box-title">Cheese Sauce</div>
                                 <div class="box-price price fw-bold">
@@ -259,7 +257,7 @@
                             </div>
                             <div class="addons-box" data-drink="Hot Sauce" data-unique-id="addons-10">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-6.png') }}" alt="Ketchup & Mayo">
+                                    <img src="<?php echo e(asset('assets/images/sauce-6.png')); ?>" alt="Ketchup & Mayo">
                                 </div>
                                 <div class="box-title">Hot Sauce</div>
                                 <div class="box-price price fw-bold">
@@ -303,38 +301,38 @@
                         <div class="sauce-grid">
                             <div class="sauce-box" data-burger="Garlic Mayo">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-1.png') }}" alt="Garlic Mayo">
+                                    <img src="<?php echo e(asset('assets/images/sauce-1.png')); ?>" alt="Garlic Mayo">
                                 </div>
                                 <div class="box-title">Garlic Mayo</div>
                             </div>
 
                             <div class="sauce-box" data-burger="Garlic BBQ">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-3.jpg') }}" alt="Garlic BBQ">
+                                    <img src="<?php echo e(asset('assets/images/sauce-3.jpg')); ?>" alt="Garlic BBQ">
                                 </div>
                                 <div class="box-title">Garlic BBQ</div>
                             </div>
                             <div class="sauce-box" data-burger="Kebab">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-2.jpg') }}" alt="Kebab">
+                                    <img src="<?php echo e(asset('assets/images/sauce-2.jpg')); ?>" alt="Kebab">
                                 </div>
                                 <div class="box-title">Kebab</div>
                             </div>
                             <div class="sauce-box" data-burger="Yangnyeom">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-4.jpg') }}" alt="Yangnyeom">
+                                    <img src="<?php echo e(asset('assets/images/sauce-4.jpg')); ?>" alt="Yangnyeom">
                                 </div>
                                 <div class="box-title">Yangnyeom</div>
                             </div>
                             <div class="sauce-box" data-burger="Cheese Sauce">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-5.jpg') }}" alt="Cheese Sauce">
+                                    <img src="<?php echo e(asset('assets/images/sauce-5.jpg')); ?>" alt="Cheese Sauce">
                                 </div>
                                 <div class="box-title">Cheese Sauce</div>
                             </div>
                             <div class="sauce-box" data-burger="Hot Sauce">
                                 <div class="box-content">
-                                    <img src="{{ asset('assets/images/sauce-6.png') }}" alt="Ketchup & Mayo">
+                                    <img src="<?php echo e(asset('assets/images/sauce-6.png')); ?>" alt="Ketchup & Mayo">
                                 </div>
                                 <div class="box-title">Hot Sauce</div>
                             </div>
@@ -436,4 +434,6 @@
             </div>
 
 
-        @endsection
+        <?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('Layout.cashier_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\city_burgers_pos_system\resources\views/Cashier/cashier_order.blade.php ENDPATH**/ ?>

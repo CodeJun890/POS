@@ -27,11 +27,28 @@
         </div>
 
         <div>
+            <div class="fw-bold text-uppercase mt-4 mb-3">Order summary: <span
+                    class="fw-normal text-capitalize ms-2">{{ $formattedDate }}</span></div>
+            <div class="d-flex overflow-auto py-3 px-0" id="cardContainer">
+                @foreach ($uniqueProducts as $index => $food)
+                    <div class="card me-2">
+                        <img src="{{ asset($food['image']) }}" class="card-img-top" alt="{{ $food['item_name'] }}">
+                        <div class="card-body text-center">
+                            <div class="food-name fw-bold">{{ $food['item_name'] }}</div>
+                        </div>
+                        <div class="trending-popper fw-bold">
+                            <span>Total Order:
+                                {{ $food['total_quantity'] }}
+                            </span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
 
+        <div>
             <div class="order-group">
-                <div class="fw-bold text-uppercase mt-4 mb-3">Orders on: <span
-                        class="fw-normal text-capitalize ms-2">{{ $formattedDate }}</span></div>
-
+                <div class="fw-bold text-uppercase mt-4 mb-3">Order Receipts</div>
                 @php
                     $counter = 1; // Initialize a counter
                 @endphp
@@ -45,7 +62,7 @@
                                     data-bs-target="#collapse{{ $group->id }}" aria-expanded="true"
                                     aria-controls="collapse{{ $group->id }}"
                                     style="color: #000; background-color: #ffffff; border: none;">
-                                    Order #{{ $counter++ }} - Payment Method: {{ $group->payment_method }}
+                                    Order #{{ $group->customer_name }} - Payment Method: {{ $group->payment_method }}
                                 </button>
                             </h2>
                             <div id="collapse{{ $group->id }}" class="accordion-collapse collapse"

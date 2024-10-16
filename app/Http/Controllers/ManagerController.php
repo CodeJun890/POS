@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\OrderGroup;
 use App\Models\User;
@@ -12,13 +13,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ManagerController extends Controller
 {
     public function viewManagerDashboard() {
         $user = Auth::user();
         if ($user) {
-            $drinks = ['Mountain Dew', 'Royal', 'Coke', 'Water', 'Sprite'];
+            $drinks = ['Mountain Dew', 'Royal', 'Coke', 'Water (CvSU)', 'Water', 'Sprite'];
 
             // Fetch the top 2 trending food items with price
             $trendingFood = DB::table('orders')
@@ -112,7 +114,6 @@ class ManagerController extends Controller
 
         return redirect()->route('login.get');
     }
-
     public function getWeeklyData(Request $request){
         $date = $request->input('date');
         $startOfWeek = Carbon::parse($date)->startOfWeek();
@@ -160,16 +161,20 @@ class ManagerController extends Controller
             'profit' => $weeklyProfit,
         ]);
     }
-    public function viewManagerOrderHistory() {
+    public function viewManagerOrderHistory(Request $request) {
         $user = Auth::user();
         if (!$user) {
             return redirect()->route('login.get');
         }
 
-        // Retrieve all orders that belong to 'Served' order groups
+        // Get branch_id from the request
+        $branchId = $request->query('branch_id');
+        $branch = Branch::findOrFail(decrypt($branchId));
+        // Retrieve all orders that belong to 'Served' order groups for the specified branch
         $orders = Order::whereHas('orderGroup', function ($query) {
             $query->where('status', 'Served');
-        })->get();
+        })->where('branch_id', $branch->id) // Filter by branch_id
+          ->get();
 
         // Group by date and calculate total sales and profit for each day
         $orderSummary = $orders->groupBy(function ($order) {
@@ -190,14 +195,19 @@ class ManagerController extends Controller
         // Sort the orderSummary by date in descending order
         $orderSummary = $orderSummary->sortByDesc('date');
 
-        return view('Manager.manager_order_history', compact('user', 'orderSummary'));
+        return view('Manager.manager_order_history', compact('user', 'orderSummary', 'branch'));
     }
+
     public function filterManagerOrderHistory(Request $request) {
         $user = Auth::user();
 
         if (!$user) {
             return redirect()->route('login.get');
         }
+
+        // Retrieve branch_id from the request
+        $branchId = $request->input('branch_id');
+        $branch = Branch::findOrFail(decrypt($branchId));
 
         // Define date ranges for various filters
         $today = now()->startOfDay();
@@ -210,26 +220,29 @@ class ManagerController extends Controller
         // Determine the selected filter
         $filter = $request->input('filter', 'all');
 
+        // Initialize the orders query
+        $query = Order::where('branch_id', $branch->id); // Filter by branch_id
+
         switch ($filter) {
             case 'today':
-                $orders = Order::whereDate('created_at', $today)->get();
+                $orders = $query->whereDate('created_at', $today)->get();
                 $dateLabel = $today->format('Y-m-d');
                 break;
             case 'yesterday':
-                $orders = Order::whereDate('created_at', $yesterday)->get();
+                $orders = $query->whereDate('created_at', $yesterday)->get();
                 $dateLabel = $yesterday->format('Y-m-d');
                 break;
             case 'this-month':
-                $orders = Order::whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])->get();
+                $orders = $query->whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])->get();
                 $dateLabel = now()->format('F Y'); // This month label (e.g., September 2024)
                 break;
             case 'this-year':
-                $orders = Order::whereBetween('created_at', [$thisYearStart, $thisYearEnd])->get();
+                $orders = $query->whereBetween('created_at', [$thisYearStart, $thisYearEnd])->get();
                 $dateLabel = now()->format('Y'); // This year label (e.g., 2024)
                 break;
             default:
                 // Handle case for 'all' or other defaults
-                $orders = Order::all();
+                $orders = $query->get();
                 $dateLabel = 'All Time';
                 break;
         }
@@ -252,8 +265,9 @@ class ManagerController extends Controller
         });
 
         // Pass the data to the view
-        return view('Manager.manager_order_history', compact('user', 'orderSummary', 'dateLabel', 'filter'));
+        return view('Manager.manager_order_history', compact('user', 'orderSummary', 'dateLabel', 'filter', 'branch'));
     }
+
     public function searchOrderHistory(Request $request){
         $user = Auth::user();
 
@@ -347,15 +361,18 @@ class ManagerController extends Controller
     public function viewReceipt(Request $request) {
         $user = Auth::user();
         $date = $request->query('date');
-        Log::info('Received request to view receipt with date: ' . $date);
+        $branchId = $request->query('branch_id'); // Retrieve branch ID from the query
+        $branch = Branch::findOrFail($branchId);
+        Log::info('Received request to view receipt with date: ' . $date . ' and branch ID: ' . $branchId);
 
-        // Check if the date is being received correctly
-        if (!$date) {
-            return abort(404, 'Date parameter missing');
+        // Check if the date and branch ID are being received correctly
+        if (!$date || !$branchId) {
+            return abort(404, 'Date or branch parameter missing');
         }
 
-        // Fetch all order groups for that date with status "Served", along with their orders
+        // Fetch all order groups for that date with status "Served", along with their orders for the specific branch
         $orderGroups = OrderGroup::where('status', 'Served') // Add status condition
+            ->where('branch_id', $branchId) // Filter by branch ID
             ->whereHas('orders', function ($query) use ($date) {
                 $query->whereDate('created_at', $date);
             })
@@ -377,14 +394,30 @@ class ManagerController extends Controller
                 });
             });
 
+            // Fetch the unique products and their total quantities
+            $uniqueProducts = $orderGroups->flatMap(function ($group) {
+                return $group->orders;
+            })->groupBy('item') // Group by item_name
+              ->map(function ($orders, $itemName) {
+                  // Return the item, total quantity ordered, and other attributes
+                  return [
+                      'item_name' => $itemName,
+                      'total_quantity' => $orders->sum('quantity'),
+                      'image' => $orders->first()->image, // Assuming each item has the same image
+                      'sauce' => $orders->first()->sauce // Assuming each item has the same sauce
+                  ];
+              });
+
+
             $carbonDate = Carbon::parse($date);
             $formattedDate = $carbonDate->format('l, F j, Y'); // Format as 'Thursday, September 28, 2024'
 
-            return view('Manager.manager_order_receipt', compact('user', 'orderGroups', 'formattedDate', 'totalSales', 'totalProfit'));
+            return view('Manager.manager_order_receipt', compact('user', 'orderGroups', 'formattedDate', 'totalSales', 'totalProfit', 'branch', 'uniqueProducts'));
         } else {
-            return redirect()->back()->with('error', 'Receipt not found for the selected date.');
+            return redirect()->back()->with('error', 'Receipt not found for the selected date and branch.');
         }
     }
+
     public function viewCashierManagement() {
         if (Auth::check()) {
             $user = Auth::user();
@@ -412,8 +445,7 @@ class ManagerController extends Controller
 
         return response()->json(['status' => 'success', 'message' => 'Cashier account deleted successfully!']);
     }
-    public function createCashier(Request $request)
-    {
+    public function createCashier(Request $request) {
         // Validate incoming request data
         $validatedData = $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -435,6 +467,21 @@ class ManagerController extends Controller
 
         return response()->json(['status' => 'success', 'message' => 'Cashier account created successfully!', 'cashier' => $cashier]);
     }
+    public function viewCashierProfile($cashierId){
+        // Check if the user is authenticated and retrieve the cashier
+        if (auth()->check()) {
+            $cashier = User::find(decrypt($cashierId));
+            $user = Auth::user();
+            // Check if the cashier exists
+            if ($cashier) {
+                return view('Manager.manager_view_cashier', compact('cashier', 'user'));
+            }
+
+            return redirect()->back()->with('error', "This cashier does not exist in the database");
+        }
+
+        return redirect()->route('login')->with('error', 'You need to be logged in to view this profile.');
+    }
     public function viewBranchManagement() {
         if (Auth::check()) {
             $user = Auth::user();
@@ -448,15 +495,30 @@ class ManagerController extends Controller
         // Redirect to login page if user is not authenticated
         return redirect()->route('login.get');
     }
-    public function createBranch(Request $request)
-    {
+    public function createBranch(Request $request) {
         $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
         ]);
-
-       $branch =  Branch::create($request->all());
-        return response()->json(['status' => 'success', 'message' => 'Branch created successfully!', 'branch' => $branch]);
+        // Handle the file upload
+        if ($request->hasFile('image')) {
+            // Store the file in 'public/inventory_image' and get the file name
+            $fileName = $request->file('image')->store('branch_images', 'public');
+        } else {
+            return response()->json(['status' => 'error', 'message' => 'Image upload failed. Please try again.']);
+        }
+        // Create the inventory item with the uploaded image path
+        $branch = Branch::create([
+            'name' => $request->input('name'),
+            'address' => $request->input('address'),
+            'image' => $fileName,
+        ]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Branch created successfully!',
+            'branch' => $branch,
+        ]);
     }
     public function deleteBranch($id) {
         $branch = Branch::findOrFail($id);
@@ -466,11 +528,176 @@ class ManagerController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Branch do not exists'], 403);
         }
 
+          // Check if the e-receipt file exists in storage
+          if (Storage::exists($branch->image)) {
+            // Delete the e-receipt file
+            Storage::delete($branch->image);
+        } else {
+            // Optionally log or handle the case where the e-receipt does not exist
+            Log::warning("Item Image does not exist: {$branch->image}");
+        }
+
         // Delete the branch account
         $branch->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Branch deleted successfully!']);
     }
+    public function assignBranch(Request $request, $branchId) {
+        $user = User::findOrFail(decrypt($request->cashier_id));
+        $user->branch_id = decrypt($branchId);
+        $user->save();
+        return redirect()->back()->with('success', 'New cashier has been assigned successfully!');
+    }
+    public function viewBranch($branchId) {
+        $user = Auth::user();
+        $allCashiers = User::where('role', 'cashier')
+                            ->where('branch_id', null)
+                            ->get();
+        $branch = Branch::findOrFail(decrypt($branchId));
+
+        if (!$branch) {
+            return response()->json(['status' => 'error', 'message' => 'Branch does not exist'], 403);
+        }
+
+        // Retrieve all cashiers associated with this branch
+        $cashiers = User::where('branch_id', $branch->id)
+                        ->where('role', 'cashier')
+                        ->get();
+
+        // Calculate total sales for the branch
+        $totalSales = Order::where('branch_id', $branch->id)
+                            ->sum(DB::raw('quantity * price'));
+
+        // Calculate total profit for the branch
+        $totalProfit = Order::where('branch_id', $branch->id)
+                            ->sum(DB::raw('quantity * profit')); // Assuming you have a 'profit' column
+
+        return view('Manager.manager_view_branch', compact('user', 'branch', 'cashiers', 'allCashiers', 'totalSales', 'totalProfit'));
+    }
+
+    public function removeAssignedCashier($cashierId){
+        $cashier = User::findOrFail($cashierId);
+        $cashier->branch_id = null;
+        $cashier->save();
+        return response()->json(['status' => 'success', 'message' => 'Cashier successfully removed to this branch!']);
+    }
+    public function viewInventoryManagement() {
+        if (Auth::check()) {
+            $user = Auth::user();
+            // Retrieve all users with 'cashier' role
+            $inventories = Inventory::all();
+
+            // Return the view with the authenticated user and cashier data
+            return view('Manager.manager_inventory_management', compact('user', 'inventories'));
+        }
+
+        // Redirect to login page if user is not authenticated
+        return redirect()->route('login.get');
+    }
+    public function createInventory(Request $request) {
+    // Validate request fields, including image file
+    $request->validate([
+        'item_name' => 'required|string|max:255',
+        'item_quantity' => 'required|numeric|min:1',
+        'item_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120', // Limit to 5MB and specific image types
+    ]);
+
+    // Handle the file upload
+    if ($request->hasFile('item_image')) {
+        // Store the file in 'public/inventory_image' and get the file name
+        $fileName = $request->file('item_image')->store('inventory_images', 'public');
+    } else {
+        return response()->json(['status' => 'error', 'message' => 'Image upload failed. Please try again.']);
+    }
+
+    // Create the inventory item with the uploaded image path
+    $inventory = Inventory::create([
+        'item_name' => $request->input('item_name'),
+        'item_quantity' => $request->input('item_quantity'),
+        'item_image' => $fileName,
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Inventory item created successfully!',
+        'inventory' => $inventory,
+    ]);
+    }
+
+    public function deleteInventory($id) {
+        $inventory = Inventory::findOrFail($id);
+
+        // Check if the user is a cashier before deleting
+        if (!$inventory) {
+            return response()->json(['status' => 'error', 'message' => 'Inventory item do not exist'], 404);
+        }
+
+        // Check if the e-receipt file exists in storage
+        if (Storage::exists($inventory->item_image)) {
+            // Delete the e-receipt file
+            Storage::delete($inventory->item_image);
+        } else {
+            // Optionally log or handle the case where the e-receipt does not exist
+            Log::warning("Item Image does not exist: {$inventory->item_image}");
+        }
+
+        // Delete the cashier account
+        $inventory->delete();
+
+        return response()->json(['status' => 'success', 'message' => 'Inventory item deleted successfully!']);
+    }
+
+    public function show($id) {
+        $inventory = Inventory::findOrFail($id); // Find the inventory item by ID
+        return response()->json(['status' => 'success', 'inventory' => $inventory]);
+    }
+    public function updateInventory(Request $request, $id) {
+
+        // Validate the incoming request
+        $request->validate([
+            'item_name' => 'nullable|string|max:255',
+            'item_quantity' => 'nullable|numeric|min:1',
+            'item_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        // Find the inventory item by ID
+        $inventory = Inventory::findOrFail($id);
+
+        // Update the inventory item's attributes
+        if ($request->has('item_name')) {
+            $inventory->item_name = $request->item_name;
+        }
+        if ($request->has('item_quantity')) {
+            $inventory->item_quantity = $request->item_quantity;
+        }
+
+        // Check if a new image is uploaded
+        if ($request->hasFile('item_image')) {
+            // Delete the old image if it exists (optional)
+            if ($inventory->item_image) {
+                // Assuming the old image is stored in the 'public' disk
+                Storage::disk('public')->delete($inventory->item_image);
+            }
+
+            // Store the new image
+            $imagePath = $request->file('item_image')->store('inventory_images', 'public');
+            // Update the image path in the inventory
+            $inventory->item_image = $imagePath;
+        }
+
+        // Save the updated inventory item
+        $inventory->save();
+
+        // Redirect back with a success message
+        return redirect()->back()
+            ->with('success', 'Inventory item updated successfully!');
+    }
+
+
+
+
+
+
 
 
 

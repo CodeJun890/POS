@@ -23,6 +23,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!--- IZITOAST CSS ---->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css" />
+    <!--- SELECT2 CSS ---->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <title>@yield('page-title', 'City Burgers POS')</title>
     <style>
         .sauce-graph,
@@ -35,6 +37,21 @@
 
         .text-light {
             color: #ffffff;
+        }
+
+        .select2-container {
+            width: 100% !important;
+            flex: 1 1 auto;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 100%;
+            line-height: inherit;
+            padding: 0.3rem 1rem;
+        }
+
+        .select2-selection__arrow b {
+            margin-top: 0.2rem !important;
         }
     </style>
 </head>
@@ -69,10 +86,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
     <!--- CHART JS ---->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--- SELECT2 JS ---->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
     @if (session('success'))
-        {
         <script>
             iziToast.success({
                 title: 'Success',
@@ -80,9 +98,8 @@
                 position: 'topCenter'
             });
         </script>
-
-        }
     @endif
+
     <script>
         function checkScreenWidth() {
             if (window.innerWidth > 500) {
@@ -124,6 +141,10 @@
                     });
                 });
             }
+        });
+
+        $('#cashier').select2({
+            dropdownParent: $('#assignCashier')
         });
     </script>
 

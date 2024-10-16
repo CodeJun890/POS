@@ -53,7 +53,7 @@
                             </div>
                         </div>
                     <?php else: ?>
-                        <p>Item is not valid.</p>
+                        <p class="text-center my-4">No data yet.</p>
                     <?php endif; ?>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
